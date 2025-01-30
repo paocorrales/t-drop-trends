@@ -64,6 +64,7 @@ library(ggplot2)
 library(data.table)
 library(lubridate)
 library(here)
+library(cowplot)
 
 global_map <- rnaturalearth::ne_coastline()
 models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0", 
@@ -88,6 +89,8 @@ Nunc in lobortis lacus. Duis maximus urna leo, varius sodales arcu interdum nec.
 ## Data and methods
 
 ```{r}
+#| label: model-table
+
 readr::read_rds(here("data/cmip_file_list_scenario.rds")) |> 
   _[nominal_resolution == "100 km" & source_id %in% models_in_gadi, 
     .(source_id, institution_id, nominal_resolution)] |> 
@@ -100,6 +103,96 @@ readr::read_rds(here("data/cmip_file_list_scenario.rds")) |>
 
 
 ## Results
+
+(ref:trend) a) Multimodel change in drops in temperature frequency (%, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represent the models listed in Table 1 and in black, the multimodel mean. 
+
+```{r}
+#| label: trend
+#| fig-width: 10
+#| fig-height: 5
+#| fig.cap: (ref:trend)
+
+data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_{scenario}_mean.nc", "{var}_{model}_{scenario}_mean.nc"))
+  
+  if (meta[[1]][["var"]] == "eke") {
+    var <- "ua"
+  } else {
+    var <- "tasmax"
+  }
+  file_scenario <- here(paste0("data/eke_mean/", meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585_mean.nc"))
+  
+  ReadNetCDF(f, vars = c(hist = var)) |> 
+    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
+    _[, let(model = meta[[1]][["model"]],
+            var = meta[[1]][["var"]],
+            change = ssp585 - hist,
+            lat = round(lat, digits = 8),
+            plev = NULL)] |> 
+    _[]
+  
+}) |> rbindlist()
+
+
+
+map_trend <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lon, lat)] |> 
+  ggplot(aes(ConvertLongitude(lon), lat)) +
+  geom_contour_fill(aes(z = mean_dt/365*100, fill = after_stat(level)),
+                    breaks = c(-Inf, seq(-3, 3, 0.2), Inf)) +
+  scale_fill_divergent_discretised(guide = guide_colorbar(barheight = 0.5),
+                                   labels = function(x) JumpBy(x, 2, fill = "")) +
+  geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
+  # scale_y_latitude(labels = NULL) +
+  coord_sf(expand = FALSE) +
+  labs(x = NULL, y = NULL, fill = "%") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
+        legend.key.width = grid::unit(1, 'null'),
+        # axis.title.x=element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), plot.margin = unit(c(0, 0 , 0 , 0), units = "mm")) 
+
+mean_trend <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land, model)] |> 
+  ggplot(aes(mean_dt, lat)) +
+  geom_hline(yintercept = 0, color = "grey80") +
+  geom_vline(xintercept = 0, color = "grey80") +
+  geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
+  stat_summary(orientation = "y", geom = "line") +
+  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  facet_wrap(~land) +
+  tagger::tag_facets(tag_pool = c("b", "c")) +
+  labs(x = "Change (%)") +
+  coord_fixed(ratio = 1/2.8) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "#fbfbfb", color = NA),
+        strip.text.x = element_text(size = 12),
+        plot.margin = unit(c(0, 0 , 1.9, -0.40), units = "cm"),
+        tagger.panel.tag.text = element_text(size = 12),
+         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+
+plot_grid(map_trend, mean_trend, labels = c('a)', ''), 
+          label_x = 0, label_y = 0.9,
+          label_fontface = "plain", 
+          label_colour = "white",
+          rel_widths = c(1.75, 1))
+
+```
+
+
+
+
 
 ## Summary and Discussion
 
