@@ -65,6 +65,7 @@ library(data.table)
 library(lubridate)
 library(here)
 library(cowplot)
+library(ggside)
 
 global_map <- rnaturalearth::ne_coastline()
 models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0", 
@@ -147,14 +148,12 @@ map_trend <- data |>
   scale_fill_divergent_discretised(guide = guide_colorbar(barheight = 0.5),
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
-  # scale_y_latitude(labels = NULL) +
   coord_sf(expand = FALSE) +
   labs(x = NULL, y = NULL, fill = "%") +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom",
         legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
         legend.key.width = grid::unit(1, 'null'),
-        # axis.title.x=element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(), plot.margin = unit(c(0, 0 , 0 , 0), units = "mm")) 
 
@@ -180,7 +179,7 @@ mean_trend <- data |>
         strip.text.x = element_text(size = 12),
         plot.margin = unit(c(0, 0 , 1.9, -0.40), units = "cm"),
         tagger.panel.tag.text = element_text(size = 12),
-         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
 plot_grid(map_trend, mean_trend, labels = c('a)', ''), 
           label_x = 0, label_y = 0.9,
@@ -190,7 +189,99 @@ plot_grid(map_trend, mean_trend, labels = c('a)', ''),
 
 ```
 
+(ref:serie)  
 
+```{r}
+#| label: serie
+#| fig-width: 10
+#| fig-height: 7
+#| fig.cap: (ref:serie)
+
+serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc")), function(f) {
+  
+  meta <- unglue::unglue(basename(f), "serie_freq_{threshold}_{scenario}_100km.nc")
+  ReadNetCDF(f, vars = c(mean_freq = "tasmax")) |> 
+    _[, let(year = year(time),
+            scenario = meta[[1]][["scenario"]])] |> 
+    _[, let(time = NULL)]
+  
+}) |> rbindlist() |> 
+  _[, let(scenario = factor(scenario, labels = c("Historical", "SSP5-8.5")))]
+
+model_spread <- data |> 
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50 - NH",
+                        lat %between% c(38, 40) & land == "Sea", "40 - NH",
+                        lat %between% c(28, 30) & land == "Sea", "30 - NH", 
+                        lat %between% c(48, 50) & land == "Land", "50 - NH",
+                        lat %between% c(38, 40) & land == "Land", "40 - NH",
+                        lat %between% c(28, 30) & land == "Land", "30 - NH",
+                        lat %between% c(-50, -48) & land == "Land", "50 - SH",
+                        lat %between% c(-40, -38) & land == "Land", "40 - SH",
+                        lat %between% c(-30, -28) & land == "Land", "30 - SH",
+                        lat %between% c(-50, -48) & land == "Sea", "50 - SH",
+                        lat %between% c(-40, -38) & land == "Sea", "40 - SH",
+                        lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
+  _[!is.na(serie) & var == "deltap97.5" & model %in% models_in_gadi] |>
+    tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
+  setDT() |> 
+  _[, .(mean_freq = mean(ssp585)), by = .(lat, hemisphere, land, model)] |> 
+  _[, let(scenario = "SSP5-8.5")] 
+
+serie_regions <- serie |>
+  _[!(year == 2014 & scenario != "historical")] |>
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50 - NH",
+                        lat %between% c(38, 40) & land == "Sea", "40 - NH",
+                        lat %between% c(28, 30) & land == "Sea", "30 - NH", 
+                        lat %between% c(48, 50) & land == "Land", "50 - NH",
+                        lat %between% c(38, 40) & land == "Land", "40 - NH",
+                        lat %between% c(28, 30) & land == "Land", "30 - NH",
+                        lat %between% c(-50, -48) & land == "Land", "50 - SH",
+                        lat %between% c(-40, -38) & land == "Land", "40 - SH",
+                        lat %between% c(-30, -28) & land == "Land", "30 - SH",
+                        lat %between% c(-50, -48) & land == "Sea", "50 - SH",
+                        lat %between% c(-40, -38) & land == "Sea", "40 - SH",
+                        lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
+  _[!is.na(serie)] |> 
+  _[, .(mean_freq = mean(mean_freq)), by = .(land, serie, year, scenario)] 
+
+serie_regions |> 
+  tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
+  setDT() |> 
+  # _[, let(lat = forcats::fct_relevel(lat, "55N", after = 0))] |> 
+  ggplot(aes(year, mean_freq, color = lat, group = interaction(scenario, lat))) +
+  geom_line(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_ysideboxplot(data = model_spread, aes(x = lat), orientation = "x") +
+  scale_color_manual(values = c("#004C73", "#CC3311", "#EE7733")) +
+  facet_grid(land~hemisphere, scale = "free") +
+  labs(x = "Year", y = "Frequency (days/year)", color = "Latitude") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "#fbfbfb", color = NA),
+        strip.text = element_text(size = 12),
+        ggside.axis.text.x = element_blank())
+
+```
+
+
+```{r}
+serie |>
+  _[!(year == 2014 & scenario != "historical") & lat < 0] |>
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, let(band_lat = cut_width(lat, 5))] |> 
+  _[, let(mean_freq = mean(mean_freq)), by = .(land, band_lat, year, scenario)] |> 
+  _[, FitLm(mean_freq, year),  by = .(land, band_lat, scenario)] |> 
+  _[term == "year"] |> 
+  ggplot(aes(scenario, estimate)) +
+  geom_point(aes(color = band_lat)) +
+  geom_path(aes(color = band_lat)) +
+  facet_wrap(~land)
+```
 
 
 
