@@ -189,7 +189,7 @@ plot_grid(map_trend, mean_trend, labels = c('a)', ''),
 
 ```
 
-(ref:serie)  
+(ref:serie) Mean frequency of temperature drops for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100.   
 
 ```{r}
 #| label: serie
@@ -224,7 +224,7 @@ model_spread <- data |>
                         lat %between% c(-40, -38) & land == "Sea", "40 - SH",
                         lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
   _[!is.na(serie) & var == "deltap97.5" & model %in% models_in_gadi] |>
-    tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
+  tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
   _[, .(mean_freq = mean(ssp585)), by = .(lat, hemisphere, land, model)] |> 
   _[, let(scenario = "SSP5-8.5")] 
@@ -267,21 +267,74 @@ serie_regions |>
 
 ```
 
+(ref:dist) Change in the frequency of drops in temperature (SSP5-8.5 2018-2100 minus Historical 1980-2000) for different percentiles calculates over the historical period (1979-2014).
 
 ```{r}
-serie |>
-  _[!(year == 2014 & scenario != "historical") & lat < 0] |>
-  _[, let(land = MaskLand(lon, lat))] |> 
-  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, let(band_lat = cut_width(lat, 5))] |> 
-  _[, let(mean_freq = mean(mean_freq)), by = .(land, band_lat, year, scenario)] |> 
-  _[, FitLm(mean_freq, year),  by = .(land, band_lat, scenario)] |> 
-  _[term == "year"] |> 
-  ggplot(aes(scenario, estimate)) +
-  geom_point(aes(color = band_lat)) +
-  geom_path(aes(color = band_lat)) +
-  facet_wrap(~land)
+#| label: distribution
+#| fig-width: 10
+#| fig-height: 7
+#| fig.cap: (ref:dist)
+
+file_list <- Sys.glob(here(paste0("data/series/serie_freq_deltap9*", c("historical", "ssp585"), "*")))
+
+dist <- purrr::map(file_list, function(f) {
+  message(f)
+  
+  meta <- unglue::unglue(basename(f), "serie_freq_deltap{percentile}_{scenario}_100km.nc")
+  
+  if (meta[[1]][["scenario"]] == "historical") {
+    
+    ReadNetCDF(f, vars = "tasmax", subset = list(time = c("1980-01-01", "2000-12-31"))) |> 
+      _[, .(mean_freq = mean(tasmax)), by = .(lon, lat)] |> 
+      _[, let(percentile = meta[[1]][["percentile"]],
+              scenario = meta[[1]][["scenario"]])]
+  } else {
+    
+    ReadNetCDF(f, vars = "tasmax", subset = list(time = c("2080-01-01", "2100-12-31"))) |> 
+      _[, .(mean_freq = mean(tasmax)), by = .(lon, lat)] |> 
+      _[, let(percentile = meta[[1]][["percentile"]],
+              scenario = meta[[1]][["scenario"]])]
+  }
+  
+}) |> rbindlist() |> 
+  _[, let(land = MaskLand(lon, lat),
+          region = fcase(lat %between% c(25, 55), "NH",
+                         lat %between% c(-55, -25), "SH",
+                         default = NA))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] 
+
+dist |> 
+  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50 - NH",
+                        lat %between% c(38, 40) & land == "Sea", "40 - NH",
+                        lat %between% c(28, 30) & land == "Sea", "30 - NH", 
+                        lat %between% c(48, 50) & land == "Land", "50 - NH",
+                        lat %between% c(38, 40) & land == "Land", "40 - NH",
+                        lat %between% c(28, 30) & land == "Land", "30 - NH",
+                        lat %between% c(-50, -48) & land == "Land", "50 - SH",
+                        lat %between% c(-40, -38) & land == "Land", "40 - SH",
+                        lat %between% c(-30, -28) & land == "Land", "30 - SH",
+                        lat %between% c(-50, -48) & land == "Sea", "50 - SH",
+                        lat %between% c(-40, -38) & land == "Sea", "40 - SH",
+                        lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
+  _[!is.na(serie)] |>
+  _[, .(mean_freq = mean(mean_freq)), by = .(land, serie, percentile, scenario)] |> 
+  dcast(land + serie + percentile ~ scenario, value.var = "mean_freq") |> 
+  tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
+  setDT() |> 
+  ggplot(aes(percentile, ssp585 / historical)) +
+  geom_col(aes(fill = lat), position = "dodge") +
+  scale_fill_manual(values = c("#004C73", "#CC3311", "#EE7733")) +
+  scale_y_log10() +
+  facet_grid(land~hemisphere) +
+  labs(x = "Percentile", y = "Ratio (SSP5-8.5/Historical)") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "#fbfbfb", color = NA),
+        strip.text = element_text(size = 12))
+
+
 ```
+
 
 
 
