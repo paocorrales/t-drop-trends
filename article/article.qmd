@@ -66,6 +66,7 @@ library(lubridate)
 library(here)
 library(cowplot)
 library(ggside)
+library(patchwork)
 
 global_map <- rnaturalearth::ne_coastline()
 models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0", 
@@ -105,13 +106,13 @@ readr::read_rds(here("data/cmip_file_list_scenario.rds")) |>
 
 ## Results
 
-(ref:trend) a) Multimodel change in drops in temperature frequency (%, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represent the models listed in Table 1 and in black, the multimodel mean. 
+
 
 ```{r}
 #| label: trend
 #| fig-width: 10
 #| fig-height: 5
-#| fig.cap: (ref:trend)
+#| fig.cap: "a) Multimodel change in drops in temperature frequency (%, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represent the models listed in Table 1 and in black, the multimodel mean. "
 
 data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
   
@@ -145,7 +146,8 @@ map_trend <- data |>
   ggplot(aes(ConvertLongitude(lon), lat)) +
   geom_contour_fill(aes(z = mean_dt/365*100, fill = after_stat(level)),
                     breaks = c(-Inf, seq(-3, 3, 0.2), Inf)) +
-  scale_fill_divergent_discretised(guide = guide_colorbar(barheight = 0.5),
+  scale_fill_divergent_discretised(mid = "#f7f7f7",
+                                   guide = guide_colorbar(barheight = 0.5),
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
   coord_sf(expand = FALSE) +
@@ -189,13 +191,14 @@ plot_grid(map_trend, mean_trend, labels = c('a)', ''),
 
 ```
 
-(ref:serie) Mean frequency of temperature drops for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100.   
+
+   
 
 ```{r}
 #| label: serie
-#| fig-width: 10
-#| fig-height: 7
-#| fig.cap: (ref:serie)
+#| fig-width: 8
+#| fig-height: 5
+#| fig.cap: "Mean frequency of temperature drops for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100."
 
 serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc")), function(f) {
   
@@ -260,20 +263,23 @@ serie_regions |>
   facet_grid(land~hemisphere, scale = "free") +
   labs(x = "Year", y = "Frequency (days/year)", color = "Latitude") +
   theme_minimal() +
-  theme(legend.position = "bottom",
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.8, 0.9),
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         strip.text = element_text(size = 12),
         ggside.axis.text.x = element_blank())
 
 ```
 
-(ref:dist) Change in the frequency of drops in temperature (SSP5-8.5 2018-2100 minus Historical 1980-2000) for different percentiles calculates over the historical period (1979-2014).
+
 
 ```{r}
 #| label: distribution
-#| fig-width: 10
-#| fig-height: 7
-#| fig.cap: (ref:dist)
+#| fig-width: 8
+#| fig-height: 5
+#| fig.cap: "Change in the frequency of drops in temperature (SSP5-8.5 2018-2100 minus Historical 1980-2000) for different percentiles calculates over the historical period (1979-2014)."
 
 file_list <- Sys.glob(here(paste0("data/series/serie_freq_deltap9*", c("historical", "ssp585"), "*")))
 
@@ -326,9 +332,13 @@ dist |>
   scale_fill_manual(values = c("#004C73", "#CC3311", "#EE7733")) +
   scale_y_log10() +
   facet_grid(land~hemisphere) +
-  labs(x = "Percentile", y = "Ratio (SSP5-8.5/Historical)") +
+  labs(x = "Percentile", y = "Ratio (SSP5-8.5/Historical)",
+       fill = "Latitude") +
   theme_minimal() +
-  theme(legend.position = "bottom",
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.8, 0.9),
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         strip.text = element_text(size = 12))
 
@@ -336,6 +346,78 @@ dist |>
 ```
 
 
+
+```{r}
+#| label: eke
+#| fig-width: 8
+#| fig-height: 4
+#| fig.cap: "Changes in EKE and drops in temperature frequency for SSP5-8.5 compared with the historical period and each model. Values are calculated for northern () and southern () hemisphere and over sea (circles) and land(triangles). Each solid line correspond to a linea regresion for each hemisphere. "
+
+change <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  
+  _[, let(land = MaskLand(lon, lat),
+          region = fcase(lat %between% c(25, 55), "NH",
+                         lat %between% c(-55, -25), "SH",
+                         default = NA))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  na.omit() |> 
+  _[, .(mean_eke = mean(eke),
+        mean_deltat = mean(deltap97.5)), by = .(region, land, model)] |> 
+  ggplot(aes(mean_eke, mean_deltat)) +
+  geom_point(aes(color = region, shape = land), size = 2) +
+  geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
+  scale_color_manual(values = c("cyan4", "orange")) +
+  labs(x = "EKE change", y = "Temp drop frequency change",
+       color = NULL, shape = NULL) +
+  theme_minimal() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.85, 0.15),
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
+        legend.margin = margin(0, 0, 0, 0, unit = "mm"),
+        panel.background = element_rect(fill = "#fbfbfb", color = NA))
+
+deltat_mean <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land)]
+
+mean_trend_dt <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, .(mean_eke = mean(eke, na.rm = TRUE)), by = .(lat, land, model)] |> 
+  ggplot(aes(mean_eke, lat)) +
+  geom_hline(yintercept = 0, color = "grey80") +
+  geom_vline(xintercept = 0, color = "grey80") +
+  geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
+  stat_summary(orientation = "y", geom = "line", aes(color = "EKE")) +
+  geom_path(data = deltat_mean, aes(x = mean_dt, color = "DeltaT")) +
+  scale_color_manual(values = c("DeltaT" = "red4", "EKE" = "black")) +
+  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  facet_wrap(~land) +
+  tagger::tag_facets(tag_pool = c("b", "c")) +
+  labs(x = "Change (%)", color = NULL) +
+  coord_fixed(ratio = 1/1.5) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "#fbfbfb", color = NA),
+        strip.text.x = element_text(size = 12),
+        plot.margin = unit(c(0, 0 , 1.9, -0.40), units = "cm"),
+        tagger.panel.tag.text = element_text(size = 12),
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+
+plot_grid(change, mean_trend_dt, labels = c('a)', ''), 
+          label_x = 0.10, label_y = 0.98,
+          label_fontface = "plain", 
+          label_colour = "black",
+          rel_widths = c(1.75, 1))
+```
 
 
 ## Summary and Discussion
