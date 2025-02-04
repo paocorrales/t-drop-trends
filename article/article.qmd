@@ -5,30 +5,23 @@ format:
         keep-tex: true
     agu-html: default
 author:
-  - name: Michael J Mahoney
+  - name: Paola B Corrales
     affiliations:
-      - name: State University of New York College of Environmental Science and Forestry
-        department: Graduate Program in Environmental Science
-        address: 1 Forestry Drive
-        city: Syracuse
-        region: NY
-        country: USA
-        postal-code: 13210
-    orcid: 0000-0003-2402-304X
+      - name: Monash University
+        department: School of Earth, Atmosphere and Environment
+        region: VIC
+        country: Australia
+    corresponding: true
+    orcid: 0000-0003-1923-9129
     email: fake_email@fakeyfake.com
-    url: https://mm218.dev
-    acknowledgements: Translated template to Quarto.
   - name: Charles Teague
     affiliations:
-      - name: Posit, PBC
-        address: 250 Northern Ave
-        city: Boston
-        region: Massachusetts
-        country: USA
-        postal-code: 02210
-    corresponding: true
+      - name: Monash University
+        department: School of Earth, Atmosphere and Environment
+        region: VIC
+        country: Australia
     orcid: 0000-0001-8715-9476
-    email: charles@posit.co
+    email: martin.singh@monash.edu
 abstract: |
   The abstract (1) states the nature of the investigation and (2) summarizes the important conclusions. The abstract should be suitable for indexing. Your abstract should:
 
@@ -78,15 +71,16 @@ models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0",
 
 ## Introduction
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum hendrerit facilisis velit sit amet malesuada. Phasellus ornare nibh augue, maximus sodales ex tristique vitae. Vivamus non sollicitudin orci, aliquam placerat metus. Maecenas volutpat orci felis, vel finibus urna consectetur sed. Integer in dui ac dui mollis imperdiet. Quisque sed dapibus nibh. Aenean non luctus leo. Phasellus luctus mauris id aliquet dictum. Aliquam fermentum semper massa, vel dignissim nibh dictum et. See @Hubbard2021.
+Cold fronts are a important feature of weather in extratropical regions and are in part responsible for the precipitation in these regions [@konstali2024]. Cold fronts are also linked to extreme events like heavy precipitation [@catto2013] and severe wildfires in southern Australia [@cai2022]. 
 
-Phasellus interdum tincidunt ex, a euismod massa pulvinar at. Ut fringilla ut nisi nec volutpat. Morbi imperdiet congue tincidunt. Vivamus eget rutrum purus. Etiam et pretium justo. Donec et egestas sem. Donec molestie ex sit amet viverra egestas. Nullam justo nulla, fringilla at iaculis in, posuere non mauris. Ut eget imperdiet elit.
+Front identification can be a complex task, to this date, there are several methods that uses different characteristics of the fronts. Some of them looks for thermodynamical changes associated with temperature and humidity in different atmospheric levels [@berry2011], others identify changes in the wind field [@simmonds2011]. These methods relies on the data being in a regular grid (as outputs from numerical models or reanalysis) and usually depends on different thresholds that need to be calibrated for different model resolutions. 
+For this study we use the changes from day to day in near surface temperature (or drops in temperature) to estimate the passage of fronts [@reeder2015]. This very simple method can be use for both data from station observations and gridded data (with varied resolution up to 2.5 degrees [@king2024]). Previous studies have shown that this method is suitable for the detection of strong cold fronts in South Eastern Australia [@cai2022, @reader2015], and recently @king2024 showed that this method can successfully identify cold fronts with similar results as the obtained with other methodologies. Moreover, @king2024 calculated a climatology of front frequency using global climate models from phase 6 of the Coupled Model Intercomparison Project (CMIP6). while the models overestimate the frequency of fronts in polar regions and tend to underestimate the occurrence of large temperature drops over the midlatitude land regions compared with ERA5. However, they can represent well the patterns of front frequency equatorward of 60$ ^{\circ}$. 
 
-In luctus mauris vitae imperdiet luctus. Morbi volutpat ligula ut tortor fermentum, eu ornare felis luctus. Donec semper diam vitae mattis posuere. Suspendisse facilisis purus nisi, sit amet egestas ex tempor ut. Cras tortor nulla, euismod at fermentum vel, dictum vel justo. Aenean commodo interdum diam nec placerat. Nunc vestibulum felis at est tincidunt, at euismod dui vestibulum. Nulla venenatis tortor at auctor iaculis. Donec consectetur neque ut sagittis ornare. Nullam pharetra felis tempor suscipit efficitur. Curabitur nibh ex, euismod at congue hendrerit, egestas id mi. Duis porttitor neque in commodo elementum. Fusce vitae fermentum nisi, euismod viverra augue. Curabitur at mi pretium, accumsan purus nec, tempus turpis.
+As the planet keeps heating up, understanding how the increased global temperature will impact the occurrence of cold fronts is very important. A few authors have aproached this question, for example @catto2014 used objective front identification [@berry2011] in 18 CMIP5 models and compared the changes between historical 1980-2005 + RCP8.5 2080-2100. They found an overall decrease in front frequency in the Northern Hemisphere, with a poleward shift of the maxima of front frequency and a strong decrease at high latitudes. The Southern Hemisphere shows a poleward shift of the frequency maximum. On the other hand, @konstali2024, identified fronts using gradient of equivalent potential temperature in 850 hPa for the CESM2-LE model and found an increase in the frequency of fronts related to fronts becoming larger or more elongated in both hemispheres. 
 
-Donec non semper dui, quis aliquet est. Quisque quis sapien at massa ultricies egestas. Duis consequat ultricies erat, a pulvinar nisl vestibulum id. Sed tristique turpis ligula, et tempor lectus iaculis at. Vivamus commodo sapien ac turpis vestibulum dapibus. Morbi tristique arcu metus, et laoreet nisi varius nec. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce sit amet nisl at mauris suscipit aliquet. Nulla vitae dignissim urna. Suspendisse sit amet arcu vitae magna blandit mattis. Vivamus convallis efficitur pulvinar. Sed cursus elit nulla. Sed porta, arcu a euismod pretium, odio dui lacinia lacus, ac vulputate nulla augue eget ex. Nullam consequat ligula sit amet mattis aliquam. Nulla risus urna, ultrices vel ullamcorper id, ornare viverra nunc.
+In this paper we build on the drops in temperature methodology to evaluate the change in frequency of cold fronts in a warmer future compared with the resent past. In an effort to understand possible causes to the potential changes, we explored the relationship between changes in front frequency and transient eddy kinetic energy, as a proxy for storm tracks. Several studies have shown a poleward shift on the storm tracks, particularly in the Southern Hemisphere [@ogorman2010, @tamarin2017, @chenke2022], and these changes could potentially influence the location and intensity of future cold fronts.
 
-Nunc in lobortis lacus. Duis maximus urna leo, varius sodales arcu interdum nec. Pellentesque imperdiet dolor in leo eleifend dapibus. Ut dapibus, lectus non viverra gravida, ipsum ex faucibus tellus, quis iaculis risus tellus eget augue. Nullam a viverra est. Cras velit nisi, interdum in lacus at, vehicula mattis elit. Curabitur eu viverra purus. Proin pellentesque, metus vitae congue convallis, lorem metus feugiat mi, sit amet auctor purus ligula bibendum ante. Nam id justo scelerisque, rhoncus lectus in, fermentum libero. Donec tincidunt egestas ex ac eleifend. Cras faucibus ipsum a nunc faucibus fermentum. Integer et maximus lacus. Nam dictum nibh id viverra convallis.
+
 
 ## Data and methods
 
@@ -421,6 +415,10 @@ plot_grid(change, mean_trend_dt, labels = c('a)', ''),
 
 
 ## Summary and Discussion
+
+Detection of fronts over oceans when using a constant threshold
+Weak fronts are not detected?
+
 
 ## Acknowledgments
 
