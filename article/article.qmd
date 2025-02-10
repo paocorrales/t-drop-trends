@@ -4,21 +4,22 @@ format:
     agu-pdf:
         keep-tex: true
     agu-html: default
+    docx: default
 author:
   - name: Paola B Corrales
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: VIC
+        region: Victoria
         country: Australia
     corresponding: true
     orcid: 0000-0003-1923-9129
     email: fake_email@fakeyfake.com
-  - name: Charles Teague
+  - name: Martin Singh
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: VIC
+        region: Victoria
         country: Australia
     orcid: 0000-0001-8715-9476
     email: martin.singh@monash.edu
@@ -33,10 +34,10 @@ abstract: |
 plain-language-summary: |
   A Plain Language Summary (PLS) can be an incredibly effective science communication tool. By summarizing your paper in non-technical terms, you can explain your research and its relevance to a much broader audience. A PLS is required for submissions to AGU Advances, G-Cubed, GeoHealth, GRL, JAMES, JGR: Biogeosciences, JGR: Oceans, JGR: Planets, JGR: Solid Earth, JGR: Atmospheres, Space Weather, and Reviews of Geophysics, but optional for other journals.  A PLS should be no longer than 200 words and should be free of jargon, acronyms, equations, and any technical information that would be unknown to people from outside your scientific discipline. Read our tips for creating an effective PLS.
 keywords: []
-key-points:
-  - Key Points convey the main points and conclusions of the article. 
-  - Up to three key point statements are allowed, and each is limited to at most 140 characters with no abbreviations.
-  - Key Points are not included in the word count.
+keypoints: 
+  - Day-to-day drops in maximun temperature are identified as a proxy for cold fronts.  
+  - SSP5-8.5 from CMIP show a decrease in frequency of drops in temperature on the NH and a poleward shift over the oceans in the SH
+  - storm tracks?
 bibliography: cold-fronts.bib  
 citation:
   container-title: Geophysical Research Letters
@@ -71,43 +72,76 @@ models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0",
 
 ## Introduction
 
-Cold fronts are a important feature of weather in extratropical regions and are partly responsible for the precipitation in these areas [@konstali2024]. Cold fronts are also linked to extreme events, such as heavy precipitation [@catto2013] and severe wildfires in southern Australia [@cai2022]. 
+Cold fronts are an important feature of weather in extratropical regions and are partly responsible for the precipitation in these areas [@konstali2024]. Cold fronts are also linked to extreme events, such as heavy precipitation [@catto2013] and severe wildfires in southern Australia [@cai2022]. 
 
-Identifying fronts can be a complex task. To date, several computational methods have been developed that use different characteristics of fronts. Some of these methods looks for thermodynamic changes associated with temperature and humidity in different atmospheric levels [@berry2011], others identify changes in the wind field [@simmonds2012]. These methods rely on the data being in a regular grid (e.g. outputs from numerical models or reanalysis) and it results depend on setting different thresholds that need to be calibrated for different model resolutions. 
+Identifying fronts can be a complex task. To date, several computational methods have been developed that use different characteristics of fronts. Some of these methods look for thermodynamic changes associated with temperature and humidity in different atmospheric levels [@berry2011], others identify changes in the wind field [@simmonds2012]. These methods rely on the data being in a regular grid (e.g. outputs from numerical models or reanalysis) and it results depend on setting different thresholds that need to be calibrated for different model resolutions. 
 
-For this study we use day-to-day changes in near-surface temperature (or drops in temperature) to estimate the passage of fronts [@reeder2015]. This very simple method can be applied to both data from station observations and gridded data (with varying resolution, up to 2.5 degrees [@king2024]). Previous studies have shown that this method is suitable for the detection of strong cold fronts in southeastern Australia [@cai2022, @reeder2015]. Recently, @king2024 demonstrated that this method can successfully identify cold fronts with results comparable to those obtained with other methodologies. Furthermore, @king2024 calculated a climatology of front frequency using global climate models from phase 6 of the Coupled Model Intercomparison Project (CMIP6). While the models tend to overestimate front frequency in polar regions and underestimate the occurrence of large temperature drops over midlatitude land regions compared with ERA5, they accurately represent the patterns of front frequency equatorward of 60°.
+For this study, we use day-to-day changes in near-surface temperature (or drops in temperature) to estimate the passage of fronts [@reeder2015]. This very simple method can be applied to both data from station observations and gridded data (with varying resolution, up to 2.5 degrees [@king2024]). Previous studies have shown that this method is suitable for the detection of strong cold fronts in southeastern Australia [@cai2022, @reeder2015]. Recently, @king2024 demonstrated that this method can successfully identify cold fronts with results comparable to those obtained with other methodologies. Furthermore, @king2024 calculated a climatology of front frequency using global climate models from phase 6 of the Coupled Model Intercomparison Project (CMIP6). While the models tend to overestimate front frequency in polar regions and underestimate the occurrence of large temperature drops over midlatitude land regions compared with ERA5, they accurately represent the patterns of front frequency equatorward of 60°.
 
-As global temperatures continue to rise, understanding how this warming will impact the occurrence of cold fronts is very important. A few studies have addressed this question, for example @catto2014 used objective front identification [@berry2011] in 18 CMIP5 models and compared the changes between historical simulations between 1980-2005 and the Representative Concentration Pathway 8.5 between 2080-2100. They found an overall decrease in front frequency in the Northern Hemisphere, with a poleward shift in the maximum frequency and a significant decrease at high latitudes. In contrast, the Southern Hemisphere showed a poleward shift in the frequency maximum. On the other hand, @konstali2024, identified fronts in the CESM2-LE model simulations using gradient of equivalent potential temperature in 850 hPa and found an increase in the frequency of fronts that could be related to fronts becoming larger or more elongated in both hemispheres. 
+As global temperatures continue to rise, understanding how this warming will impact the occurrence of cold fronts is very important. A few studies have addressed this question, for example, @catto2014 used objective front identification [@berry2011] in 18 CMIP5 models and compared the changes between historical simulations between 1980-2005 and the Representative Concentration Pathway 8.5 between 2080-2100. They found an overall decrease in front frequency in the Northern Hemisphere, with a poleward shift in the maximum frequency and a significant decrease at high latitudes. In contrast, the Southern Hemisphere showed a poleward shift in the frequency maximum. On the other hand, @konstali2024, identified fronts in the CESM2-LE model simulations using the gradient of equivalent potential temperature in 850 hPa and found an increase in the frequency of fronts that could be related to fronts becoming larger or more elongated in both hemispheres. 
 
-In this paper we build on the drops in temperature methodology to evaluate the change in frequency of cold fronts in a warmer future compared with the resent past using a set of models from CMIP6. In an effort to understand possible causes to the potential changes, we explored the relationship between changes in front frequency and transient eddy kinetic energy, that is directly related to storm tracks. Several studies have shown a poleward shift on the storm tracks in future climate change scenarios, particularly in the Southern Hemisphere [@ogorman2010, @tamarin2017, @chemke2022], and these changes could potentially influence the location and intensity of future cold fronts.
+In this paper we build on the drops in temperature methodology to evaluate the change in frequency of cold fronts in a warmer future compared with the recent past using a set of models from CMIP6. In an effort to understand possible causes to the potential changes, we explored the relationship between changes in front frequency and transient eddy kinetic energy, that is directly related to storm tracks. Several studies have shown a poleward shift on the storm tracks in future climate change scenarios, particularly in the Southern Hemisphere [@ogorman2010, @tamarin2017, @chemke2022], and these changes could potentially influence the location and intensity of future cold fronts.
 
 
 
 ## Data and methods
 
+For the analysis we use 10 models from phase 6 of the Coupled Model Intercomparison Project (CMIP6, @eyring2016), this includes Historical runs up to 2014 and the Shared Socioeconomic Pathways 5 (SSP5-8.5) from the Scenario Model Intercomparison Project (ScenarioMIP, @oneill2016) as described in @tbl-models. We choose these models based on the data available for the  historical and scenario experiments stored on the Australian National Computational Infrastructure (NCI) replica data store.
+
+While all models use the same nominal resolution of 100 km, we interpolate them to the same grid to easier the comparison. 
+
 ```{r}
-#| label: model-table
+#| label: tbl-models
+#| tbl-cap: "List of the coupled model intercomparison project phase 6 (CMIP6) climate model used in this analysis."
+#| results: asis
+
 
 readr::read_rds(here("data/cmip_file_list_scenario.rds")) |> 
   _[nominal_resolution == "100 km" & source_id %in% models_in_gadi, 
     .(source_id, institution_id, nominal_resolution)] |> 
   unique(by = "source_id") |> 
+  _[order(source_id)] |> 
+  _[, let(references = c("@lovato2021; -@lovato2021a", "@consortiumec-earth2019; -@consortiumec-earth2019a",
+                         "@consortiumec-earth2020; -@consortiumec-earth2021", 
+                         "@consortiumec-earth2019b; -@consortiumec-earth2019c",
+                         "@consortiumec-earth2020a; -@consortiumec-earth2023",
+                         "@guo2018; -@guo2018a", "@volodin2019, @volodin2019a",
+                         "@volodin2019b; @volodin2019c", "@jungclaus2019; @schupfner2019",
+                         "@bentsen2019a; @bentsen2019b"))] |> 
+  _[, let(source_id = paste0(source_id, "\n[", references, "]"))] |> 
+  _[, .(source_id, institution_id, nominal_resolution)] |> 
   knitr::kable(col.names = c("Model", "Institution", "Original resolution"),
-               caption = "List of models used for the analysis.") |> 
-  kableExtra::kable_classic()
+               caption = "List of models used for the analysis.",
+               align = "llc",
+               format = "markdown", format.args = list(zero.print = "-"))
+
 ```
+
+
+### Front Identification
+
+We identify drops in temperature as a proxy of front passages by calculating the change in daily maximum temperature from one day to the next ($\Delta T$). The $\Delta T$ is calculated for all grid points and days over the studied periods. @king2024 defined a passage of a strong cold front as a $\Delta T \le -10°C$, meaning where the maximum temperature on the following day is at least 10$^{\circ}$C colder. While this value is reasonable for detecting strong drops in temperature over land, this can lead to an underestimation over sea due to the smaller temperature variability **(standard deviation map for max temp in supplemental material?)**. For this reason, in this study we use the value of the percentile 2.5th (as we want to capture the most negative temperature drops) as a threshold for each grid point to identify drops in temperature, ie $\Delta T \le 2.5^{th}$ percentile. The percentiles are calculated over the historical period between 1979 and 2014 for each model at each grid point. It is important to notice that by using this threshold we detect drops in temperature in the tropics that will not be associated with frontal systems. 
+
+
+
+### Storm Tracks estimation
+
+To estimate the storm tracks we calculated the transient eddy kinetic energy (EKE) applying a Fast Fourier transform high-pass filter to the daily horizontal wind in 300 hPa with a 6-days cutoff for each model.  
 
 
 
 ## Results
 
+@fig-trend shows the change in $\Delta T$ frequency comparing the last 20 years of the 21st century (SSP5-8.5) and
+the last 20 years of the 20th century (historical run) in a) and the zonal mean for each latitude over sea b) and over land c). In the north hemisphere over land, there is a general decrease in temperature drops, particularly north to 40, with the exception of west and central Europe where there is an increase. This result is also observed by @catto2014 using CMIP5 and a different methodology to identify fronts and gives us confidence in the methodology used here. Over the oceans, there is also a decrease in the frequency of fronts that could be associated to a decrease in the meridional temperature gradient. The local maxima over the North Atlantic and negative values south to that area could indicate that the maximum frequency of $\Delta T$ is shifting toward the pole. 
 
+In the South Hemisphere over land, the change is generally positive with almost 2% more events in some areas. Other authors have also found an increase in the frequency of fronts in the south and east regions of Africa and Australia [@catto2014, @konstali2024]. @fig-trend a and b) show over the southern oceans a decrease in the frequency of $\Delta T$ between 30$^{\circ}$ and 45$^{\circ}$ S (depending on the longitude) and an increase to the south. This pattern indicates that the areas of higher front frequency will shift poleward in the SSP5-8.5. 
 
 ```{r}
-#| label: trend
-#| fig-width: 10
-#| fig-height: 5
-#| fig.cap: "a) Multimodel change in drops in temperature frequency (%, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represent the models listed in Table 1 and in black, the multimodel mean. "
+#| label: fig-trend
+#| fig-width: 8
+#| fig-height: 4
+#| fig.cap: "a) Multimodel change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. High topography areas are gray-shaded. Dotted areas show where at least 70% of the models agree in the sign of change"
 
 data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
   
@@ -125,28 +159,39 @@ data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
     _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
     _[, let(model = meta[[1]][["model"]],
             var = meta[[1]][["var"]],
-            change = ssp585 - hist,
+            change = ssp585 / hist,
+            diff = ssp585 - hist,
             lat = round(lat, digits = 8),
             plev = NULL)] |> 
     _[]
   
 }) |> rbindlist()
 
+topo <- rcdo::cdo_topo(grid = "r360x180") |> 
+  rcdo::cdo_execute(options = "-f nc") |> 
+  ReadNetCDF()
 
+sig <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model ~ var, value.var = "diff") |> 
+  _[, .(sig = sum(sign(deltap97.5), na.rm = TRUE)), by = .(lon, lat)] 
 
 map_trend <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lon, lat)] |> 
   ggplot(aes(ConvertLongitude(lon), lat)) +
-  geom_contour_fill(aes(z = mean_dt/365*100, fill = after_stat(level)),
-                    breaks = c(-Inf, seq(-3, 3, 0.2), Inf)) +
-  scale_fill_divergent_discretised(mid = "#f7f7f7",
+  geom_contour_fill(aes(z = mean_dt - 1, fill = after_stat(level)),
+                    breaks = c(-Inf, seq(-8, 8, 0.25), Inf)) +
+  scale_fill_divergent_discretised(name = "%", mid = "#f7f7f7",
                                    guide = guide_colorbar(barheight = 0.5),
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
+  geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 7], alpha = 0.3, shape = 4, size = 0.1) +
+  ggnewscale::new_scale_fill() +
+  geom_contour_fill(data = topo, aes(ConvertLongitude(lon), lat, z = topo), breaks = c(1300, Inf), fill = "grey90") +
   coord_sf(expand = FALSE) +
-  labs(x = NULL, y = NULL, fill = "%") +
+  labs(x = NULL, y = NULL, fill = "days/year") +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom",
         legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
@@ -154,9 +199,11 @@ map_trend <- data |>
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(), plot.margin = unit(c(0, 0 , 0 , 0), units = "mm")) 
 
+annotation <- data.frame(ymin = -66, ymax = -56, xmin = -Inf, xmax = Inf, land = "Land")
+
 mean_trend <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land, model)] |> 
@@ -166,9 +213,13 @@ mean_trend <- data |>
   geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
   stat_summary(orientation = "y", geom = "line") +
   scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "#fbfbfb",
+            data = annotation,
+            inherit.aes = FALSE) +
   facet_wrap(~land) +
   tagger::tag_facets(tag_pool = c("b", "c")) +
-  labs(x = "Change (%)") +
+  labs(x = "days/year") +
   coord_fixed(ratio = 1/2.8) +
   theme_minimal() +
   theme(legend.position = "bottom",
@@ -187,13 +238,13 @@ plot_grid(map_trend, mean_trend, labels = c('a)', ''),
 ```
 
 
-   
+The mean time series of $\Delta T$ frequency in @fig-serie shows consistent trends. Interestingly, the trend around 50$^{\circ}$ N in the North Hemisphere is negative over sea and land since the beginning of the 20th century. In the South Hemisphere over the oceans, the time series for 30$^{\circ}$ and 40$^{\circ}$ S show a decrease of drops in temperature and the opposite happens on the 50$^{\circ}$ latitude band, indicating again a possible poleward shift of cold fronts in the future. It is important to notice the variability between models in the subfigure next to each panel. Each box plot is calculated using the year 2080-2100 for each model and region. The 50$^{\circ}$ latitude band in both hemispheres show the bigger changes but also the highest variability between models, however at least 70% of the models agree on the sign of the change.
 
 ```{r}
-#| label: serie
+#| label: fig-serie
 #| fig-width: 8
 #| fig-height: 5
-#| fig.cap: "Mean frequency of temperature drops for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100."
+#| fig.cap: "Mean frequency of $\\Delta T$ for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100."
 
 serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc")), function(f) {
   
@@ -222,9 +273,9 @@ model_spread <- data |>
                         lat %between% c(-40, -38) & land == "Sea", "40 - SH",
                         lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
   _[!is.na(serie) & var == "deltap97.5" & model %in% models_in_gadi] |>
+  _[, .(mean_freq = weighted.mean(ssp585, cos(lat*pi/180))), by = .(serie, land, model)] |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
-  _[, .(mean_freq = mean(ssp585)), by = .(lat, hemisphere, land, model)] |> 
   _[, let(scenario = "SSP5-8.5")] 
 
 serie_regions <- serie |>
@@ -244,22 +295,21 @@ serie_regions <- serie |>
                         lat %between% c(-40, -38) & land == "Sea", "40 - SH",
                         lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
   _[!is.na(serie)] |> 
-  _[, .(mean_freq = mean(mean_freq)), by = .(land, serie, year, scenario)] 
+  _[, .(mean_freq = weighted.mean(mean_freq, cos(lat*pi/180))), by = .(land, serie, year, scenario)] 
 
 serie_regions |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
-  # _[, let(lat = forcats::fct_relevel(lat, "55N", after = 0))] |> 
   ggplot(aes(year, mean_freq, color = lat, group = interaction(scenario, lat))) +
   geom_line(alpha = 0.3) +
   geom_smooth(method = "lm", se = FALSE) +
   geom_ysideboxplot(data = model_spread, aes(x = lat), orientation = "x") +
-  scale_color_manual(values = c("#004C73", "#CC3311", "#EE7733")) +
+  scale_color_manual(values = c("#004C73", "#CC3311", "#ee8a33")) + 
   facet_grid(land~hemisphere, scale = "free") +
-  labs(x = "Year", y = "Frequency (days/year)", color = "Latitude") +
+  labs(x = "Year", y = latex2exp::TeX("$\\Delta T$ frequency (days/year)"), color = "Latitude") +
   theme_minimal() +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.8, 0.9),
+        legend.position.inside = c(0.8, 0.93),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
@@ -267,14 +317,14 @@ serie_regions |>
         ggside.axis.text.x = element_blank())
 
 ```
-
+To explore the distribution of the change, @fig-distribution shows the change in frequency of $\Delta T$ using different percentiles as thresholds from 10 to 0.1th. The percentile values are also calculated from the historical period between 1979 and 2014 for each grid point and model as in @fig-trend. This figure shows that the change in the frequency of $\Delta T$ is bigger when the percentile is more extreme. For example in the North Hemisphere over sea, the 0.1 percentile shows that there will be less than half drops in temperature in the future over 50$^{\circ}$ N. However, it is important to notice that more extreme percentiles are associated to fewer events per year. According to this result, regions where we expect more drops in temperature in the future, e.g. land regions in the South Hemisphere, will also see more intense $\Delta T$, and the opposite for areas where the frequency will decreases. 
 
 
 ```{r}
-#| label: distribution
+#| label: fig-distribution
 #| fig-width: 8
 #| fig-height: 5
-#| fig.cap: "Change in the frequency of drops in temperature (SSP5-8.5 2018-2100 minus Historical 1980-2000) for different percentiles calculates over the historical period (1979-2014)."
+#| fig.cap: "Fractional change in the frequency of $\\Delta T$ (SSP5-8.5 2018-2100 divided Historical 1980-2000) for different thresholds defined as the percentile value for each grid point and model calculated over the historical period (1979-2014)."
 
 file_list <- Sys.glob(here(paste0("data/series/serie_freq_deltap9*", c("historical", "ssp585"), "*")))
 
@@ -317,21 +367,21 @@ dist |>
                         lat %between% c(-50, -48) & land == "Sea", "50 - SH",
                         lat %between% c(-40, -38) & land == "Sea", "40 - SH",
                         lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
-  _[!is.na(serie)] |>
-  _[, .(mean_freq = mean(mean_freq)), by = .(land, serie, percentile, scenario)] |> 
+  _[!is.na(serie)] |> 
+  _[, .(mean_freq = weighted.mean(mean_freq, cos(lat*pi/180))), by = .(land, serie, percentile, scenario)] |> 
   dcast(land + serie + percentile ~ scenario, value.var = "mean_freq") |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
-  ggplot(aes(percentile, ssp585 / historical)) +
+  ggplot(aes(factor(round(100-as.numeric(percentile), digits = 1)), ssp585 / historical)) +
   geom_col(aes(fill = lat), position = "dodge") +
-  scale_fill_manual(values = c("#004C73", "#CC3311", "#EE7733")) +
+  scale_fill_manual(values = c("#004C73", "#CC3311", "#ee8a33")) +
   scale_y_log10() +
   facet_grid(land~hemisphere) +
-  labs(x = "Percentile", y = "Ratio (SSP5-8.5/Historical)",
+  labs(x = "Percentile", y = latex2exp::TeX("Fractional change of $\\Delta T$"),
        fill = "Latitude") +
   theme_minimal() +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.8, 0.9),
+        legend.position.inside = c(0.8, 0.93),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
@@ -340,17 +390,17 @@ dist |>
 
 ```
 
-
+@fig-eke explores the relationship between the change in EKE and frequency of $\Delta T$ comparing the scenario SSP5-8.5 (2080-2100) and the recent past (1980-2000). In the North Hemisphere, both changes in EKE and in the frequency of $\Delta T$ are mainly negative (@fig-eke a). The zonal mean shows that this positive relationship holds well over oceans with negative changes of $\Delta T$ frequency and EKE around 40$^{\circ}$ N (@fig-eke b). At first glance, the relationship in the South Hemisphere is negative due mainly to the mean changes over land where the $\Delta T$ increases while the EKE shifts to the south. **why? are we detecting changes in temp not related to cyclones and frontal things?** Over the sea, the changes are consistent with a poleward shift of the storm tracks (already reported by @ogorman2010, @tamarin2017, @chemke2022) and the maximum frequency of $\Delta T$.       
 
 ```{r}
-#| label: eke
+#| label: fig-eke
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "Changes in EKE and drops in temperature frequency for SSP5-8.5 compared with the historical period and each model. Values are calculated for northern () and southern () hemisphere and over sea (circles) and land(triangles). Each solid line correspond to a linea regresion for each hemisphere. "
+#| fig.cap: "Mean change in EKE and $\\Delta T$ frequency for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 55$^{\\circ}$) and southern (-25$^{\\circ}$ to -55$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere. b) and c) show the zonal mean for EKE ($m^2 s^2$) and $\\Delta T$ (days/year) over land and sea respectively"
 
 change <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  dcast(lat + lon + model ~ var, value.var = "diff") |> 
   
   _[, let(land = MaskLand(lon, lat),
           region = fcase(lat %between% c(25, 55), "NH",
@@ -360,15 +410,15 @@ change <- data |>
   na.omit() |> 
   _[, .(mean_eke = mean(eke),
         mean_deltat = mean(deltap97.5)), by = .(region, land, model)] |> 
-  ggplot(aes(mean_eke, mean_deltat)) +
+  ggplot(aes((mean_eke - 1)*100, (mean_deltat - 1)*100)) +
   geom_point(aes(color = region, shape = land), size = 2) +
   geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
   scale_color_manual(values = c("cyan4", "orange")) +
-  labs(x = "EKE change", y = "Temp drop frequency change",
+  labs(x = latex2exp::TeX("EKE change ($m^2 s^2$)"), y = latex2exp::TeX("$\\Delta T$ frequency change (days/year)"),
        color = NULL, shape = NULL) +
   theme_minimal() +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.85, 0.15),
+        legend.position.inside = c(0.85, 0.1),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
         legend.margin = margin(0, 0, 0, 0, unit = "mm"),
@@ -376,34 +426,38 @@ change <- data |>
 
 deltat_mean <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land)]
+  _[, .(mean_dt = mean(deltap97.5-1, na.rm = TRUE)), by = .(lat, land)]
 
 mean_trend_dt <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "change") |> 
+  dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   _[, .(mean_eke = mean(eke, na.rm = TRUE)), by = .(lat, land, model)] |> 
-  ggplot(aes(mean_eke, lat)) +
+  ggplot(aes(mean_eke-1, lat)) +
   geom_hline(yintercept = 0, color = "grey80") +
   geom_vline(xintercept = 0, color = "grey80") +
   geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
   stat_summary(orientation = "y", geom = "line", aes(color = "EKE")) +
   geom_path(data = deltat_mean, aes(x = mean_dt, color = "DeltaT")) +
-  scale_color_manual(values = c("DeltaT" = "red4", "EKE" = "black")) +
+  scale_color_manual(values = c("DeltaT" = "red4", "EKE" = "black"),
+                     labels = c(latex2exp::TeX("$\\Delta T$"), "EKE")) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "#fbfbfb",
+            data = annotation,
+            inherit.aes = FALSE) +
   scale_y_latitude(breaks = seq(-80, 80 , 20)) +
   facet_wrap(~land) +
   tagger::tag_facets(tag_pool = c("b", "c")) +
-  labs(x = "Change (%)", color = NULL) +
-  coord_fixed(ratio = 1/1.5) +
+  labs(x = "Change", color = NULL) +
   theme_minimal() +
   theme(legend.position = "bottom",
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         strip.text.x = element_text(size = 12),
-        plot.margin = unit(c(0, 0 , 1.9, -0.40), units = "cm"),
+        plot.margin = unit(c(0, 0 , 0, -0.40), units = "cm"),
         tagger.panel.tag.text = element_text(size = 12),
         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
@@ -417,17 +471,25 @@ plot_grid(change, mean_trend_dt, labels = c('a)', ''),
 
 ## Summary and Discussion
 
-Detection of fronts over oceans when using a constant threshold
-Weak fronts are not detected?
+What we did
+
+Summary of results
+
+Detection of fronts over oceans when using a constant threshold underestimates the fronts, using a percentile means detecting a similar number of fronts in each grid point.
+Weak fronts are not detected? 
+Contrast land - sea play a role here?
+Why EKE does not correlate well with deltaT in some areas? particularly SH-Land?
+
 
 
 ## Acknowledgments
 
-Phasellus interdum tincidunt ex, a euismod massa pulvinar at. Ut fringilla ut nisi nec volutpat. Morbi imperdiet congue tincidunt. Vivamus eget rutrum purus. Etiam et pretium justo. Donec et egestas sem. Donec molestie ex sit amet viverra egestas. Nullam justo nulla, fringilla at iaculis in, posuere non mauris. Ut eget imperdiet elit.
+CLEX, NCI, etc
 
 ## Open research
 
-Phasellus interdum tincidunt ex, a euismod massa pulvinar at. Ut fringilla ut nisi nec volutpat. Morbi imperdiet congue tincidunt. Vivamus eget rutrum purus. Etiam et pretium justo. Donec et egestas sem. Donec molestie ex sit amet viverra egestas. Nullam justo nulla, fringilla at iaculis in, posuere non mauris. Ut eget imperdiet elit.
+The data used in the manuscript is publicly available for CMIP6 data at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at http://doi.org/, version 0.xx. 
+
 
 ## References {.unnumbered}
 
