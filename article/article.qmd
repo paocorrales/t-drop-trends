@@ -144,7 +144,7 @@ In the Southern Hemisphere over land, the change is generally positive with 5 ev
 #| label: fig-trend
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "a) Multimodel change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. High topography areas are gray-shaded. Dotted areas show where at least 70% of the models agree in the sign of change"
+#| fig.cap: "a) Multimodel change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. High topography areas are gray-shaded. Dotted areas show where at least 90% of the models agree in the sign of change"
 
 data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
   
@@ -185,12 +185,12 @@ map_trend <- data |>
   _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lon, lat)] |> 
   ggplot(aes(ConvertLongitude(lon), lat)) +
   geom_contour_fill(aes(z = mean_dt, fill = after_stat(level)),
-                    breaks = c(-Inf, seq(-8, 8, 0.25), Inf)) +
+                    breaks = c(-Inf, seq(-8, 8, 0.5), Inf)) +
   scale_fill_divergent_discretised(name = "days/year", mid = "#f7f7f7",
                                    guide = guide_colorbar(barheight = 0.5),
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
-  geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 7], alpha = 0.3, shape = 4, size = 0.1) +
+  geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 9], alpha = 0.3, shape = 4, size = 0.1) +
   ggnewscale::new_scale_fill() +
   geom_contour_fill(data = topo, aes(ConvertLongitude(lon), lat, z = topo), breaks = c(1300, Inf), fill = "grey90") +
   coord_sf(expand = FALSE) +
@@ -200,7 +200,8 @@ map_trend <- data |>
         legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
         legend.key.width = grid::unit(1, 'null'),
         axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(), plot.margin = unit(c(0, 0 , 0 , 0), units = "mm")) 
+        axis.ticks.y = element_blank(), 
+        plot.margin = unit(c(0, -0.4 , 0 , 0), units = "cm")) 
 
 annotation <- data.frame(ymin = -66, ymax = -56, xmin = -Inf, xmax = Inf, land = "Land")
 
@@ -263,46 +264,37 @@ serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc"
 model_spread <- data |> 
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50 - NH",
-                        lat %between% c(38, 40) & land == "Sea", "40 - NH",
-                        lat %between% c(28, 30) & land == "Sea", "30 - NH", 
-                        lat %between% c(48, 50) & land == "Land", "50 - NH",
-                        lat %between% c(38, 40) & land == "Land", "40 - NH",
-                        lat %between% c(28, 30) & land == "Land", "30 - NH",
-                        lat %between% c(-50, -48) & land == "Land", "50 - SH",
-                        lat %between% c(-40, -38) & land == "Land", "40 - SH",
-                        lat %between% c(-30, -28) & land == "Land", "30 - SH",
-                        lat %between% c(-50, -48) & land == "Sea", "50 - SH",
-                        lat %between% c(-40, -38) & land == "Sea", "40 - SH",
-                        lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
+  _[, let(serie = fcase(lat %between% c(48, 50), "50 - NH",
+                        lat %between% c(38, 40), "40 - NH",
+                        lat %between% c(28, 30), "30 - NH", 
+                        lat %between% c(-50, -48), "50 - SH",
+                        lat %between% c(-40, -38), "40 - SH",
+                        lat %between% c(-30, -28), "30 - SH"))] |>
   _[!is.na(serie) & var == "deltap97.5" & model %in% models_in_gadi] |>
   _[, .(mean_freq = weighted.mean(ssp585, cos(lat*pi/180))), by = .(serie, land, model)] |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
-  _[, let(scenario = "SSP5-8.5")] 
+  _[, let(scenario = "SSP5-8.5")] |> 
+  _[!(land == "Land" & hemisphere == "SH" & lat == 50)]
 
 serie_regions <- serie |>
   _[!(year == 2014 & scenario != "historical")] |>
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50 - NH",
-                        lat %between% c(38, 40) & land == "Sea", "40 - NH",
-                        lat %between% c(28, 30) & land == "Sea", "30 - NH", 
-                        lat %between% c(48, 50) & land == "Land", "50 - NH",
-                        lat %between% c(38, 40) & land == "Land", "40 - NH",
-                        lat %between% c(28, 30) & land == "Land", "30 - NH",
-                        lat %between% c(-50, -48) & land == "Land", "50 - SH",
-                        lat %between% c(-40, -38) & land == "Land", "40 - SH",
-                        lat %between% c(-30, -28) & land == "Land", "30 - SH",
-                        lat %between% c(-50, -48) & land == "Sea", "50 - SH",
-                        lat %between% c(-40, -38) & land == "Sea", "40 - SH",
-                        lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
+  _[, let(serie = fcase(lat %between% c(48, 50), "50 - NH",
+                        lat %between% c(38, 40), "40 - NH",
+                        lat %between% c(28, 30), "30 - NH", 
+                        lat %between% c(-50, -48), "50 - SH",
+                        lat %between% c(-40, -38), "40 - SH",
+                        lat %between% c(-30, -28), "30 - SH"))] |>
   _[!is.na(serie)] |> 
-  _[, .(mean_freq = weighted.mean(mean_freq, cos(lat*pi/180))), by = .(land, serie, year, scenario)] 
+  _[, .(mean_freq = weighted.mean(mean_freq, cos(lat*pi/180))), by = .(land, serie, year, scenario)] |> 
+  _[!(land == "Land" & serie == "50 - SH")]
 
 serie_regions |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
+  _[year >= 1900] |> 
   ggplot(aes(year, mean_freq, color = lat, group = interaction(scenario, lat))) +
   geom_line(alpha = 0.3) +
   geom_smooth(method = "lm", se = FALSE) +
@@ -312,12 +304,13 @@ serie_regions |>
   labs(x = "Year", y = latex2exp::TeX("$\\Delta T$ frequency (days/year)"), color = "Latitude") +
   theme_minimal() +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.8, 0.93),
+        legend.position.inside = c(0.78, 0.93),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         strip.text = element_text(size = 12),
-        ggside.axis.text.x = element_blank())
+        ggside.axis.text.x = element_blank(),
+        ggside.panel.scale = 0.2)
 
 ```
 To explore the distribution of the change, @fig-distribution shows the change in frequency of $\Delta T$ using different percentiles as thresholds from 10 to 0.1th. The percentile values are also calculated from the historical period between 1979 and 2014 for each grid point and model as in @fig-trend. This figure shows that the change in the frequency of $\Delta T$ is bigger at lower (more extreme) percentile thresholds. For example in the Northern Hemisphere over sea, the 0.1 percentile threshold shows that there will be less than half drops in temperature in the future over 50$^{\circ}$ N. However, it is important to note that lower percentiles thresholds are associated to rarer events, meaning fewer occurrences per year. These results suggest that regions projected to experience more temperature drops in the future, such as land areas in midlatitudes in the Southern Hemisphere, will also experience more intense $\Delta T$, whereas regions with a decreasing frequency of events will see less intense drops.
@@ -400,32 +393,32 @@ dist |>
 #| label: fig-eke
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "Mean change in EKE and $\\Delta T$ frequency for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 55$^{\\circ}$) and southern (-25$^{\\circ}$ to -55$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere. b) and c) show the zonal mean for EKE ($m^2 s^2$) and $\\Delta T$ (days/year) over land and sea respectively"
+#| fig.cap: "Mean change in EKE and $\\Delta T$ frequency for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 65$^{\\circ}$) and southern (-25$^{\\circ}$ to -65$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere. b) and c) show the zonal mean for EKE ($m^2 s^{-2}$) and $\\Delta T$ (days/year) over land and sea respectively"
 
 change <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
   dcast(lat + lon + model ~ var, value.var = "diff") |> 
   
   _[, let(land = MaskLand(lon, lat),
-          region = fcase(lat %between% c(25, 55), "NH",
-                         lat %between% c(-55, -25), "SH",
+          region = fcase(lat %between% c(25, 65), "NH",
+                         lat %between% c(-65, -25), "SH",
                          default = NA))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   na.omit() |> 
   _[, .(mean_eke = mean(eke),
         mean_deltat = mean(deltap97.5)), by = .(region, land, model)] |> 
-  ggplot(aes((mean_eke - 1)*100, (mean_deltat - 1)*100)) +
+  ggplot(aes(mean_eke, mean_deltat)) +
   geom_point(aes(color = region, shape = land), size = 2) +
   geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
   scale_color_manual(values = c("cyan4", "orange")) +
-  labs(x = latex2exp::TeX("EKE change ($m^2 s^2$)"), y = latex2exp::TeX("$\\Delta T$ frequency change (days/year)"),
+  labs(x = latex2exp::TeX("EKE change ($m^2 s^{-2}$)"), y = latex2exp::TeX("$\\Delta T$ frequency change (days/year)"),
        color = NULL, shape = NULL) +
   theme_minimal() +
   theme(legend.position = "inside",
-        legend.position.inside = c(0.85, 0.1),
+        legend.position.inside = c(0.83, 0.08),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
-        legend.margin = margin(0, 0, 0, 0, unit = "mm"),
+        legend.margin = margin(-3, 0, 0, 0, unit = "mm"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA))
 
 deltat_mean <- data |> 
@@ -453,6 +446,8 @@ mean_trend_dt <- data |>
             fill = "#fbfbfb",
             data = annotation,
             inherit.aes = FALSE) +
+  annotate(geom = "rect", ymin = c(-90, -20, 90), ymax = c(-65, 20, 65), xmin = -Inf, xmax = Inf,
+           fill = "grey93", alpha = 0.7) +
   scale_y_latitude(breaks = seq(-80, 80 , 20)) +
   facet_wrap(~land) +
   tagger::tag_facets(tag_pool = c("b", "c")) +
@@ -462,8 +457,7 @@ mean_trend_dt <- data |>
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         strip.text.x = element_text(size = 12),
         plot.margin = unit(c(0, 0 , 0, -0.40), units = "cm"),
-        tagger.panel.tag.text = element_text(size = 12),
-        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+        tagger.panel.tag.text = element_text(size = 12)) 
 
 plot_grid(change, mean_trend_dt, labels = c('a)', ''), 
           label_x = 0.10, label_y = 0.98,
