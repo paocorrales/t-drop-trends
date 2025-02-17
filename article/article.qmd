@@ -126,7 +126,7 @@ We identify drops in temperature as a proxy of front passages by calculating the
 
 ### Storm Tracks estimation
 
-We estimate storm tracks by calculating transient eddy kinetic energy (EKE) using a Fast Fourier Transform high-pass filter applied to daily horizontal wind at 300 hPa, with a 6-day cutoff for each model.  
+To estimate the storm track location we use the transient eddy kinetic energy (EKE), used by many others to estimate storm tracks [@ogorman2010; @chemke2022]. We calculated EKE using a Fast Fourier Transform high-pass filter applied to daily horizontal wind at 300 hPa, with a 6-day cutoff for each model.  
 
 
 
@@ -248,7 +248,7 @@ The mean time series of $\Delta T$ frequency in @fig-serie shows trends consiste
 #| label: fig-serie
 #| fig-width: 8
 #| fig-height: 5
-#| fig.cap: "Mean frequency of $\\Delta T$ for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100."
+#| fig.cap: "Multimodel mean frequency of $\\Delta T$ for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different latitude bands. Left to each main figure the intermodel distribution is shown for the period 2080-2100."
 
 serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc")), function(f) {
   
@@ -405,8 +405,8 @@ change <- data |>
                          default = NA))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   na.omit() |> 
-  _[, .(mean_eke = mean(eke),
-        mean_deltat = mean(deltap97.5)), by = .(region, land, model)] |> 
+  _[, .(mean_eke = weighted.mean(eke, w = cos(lat*pi/180)),
+        mean_deltat = weighted.mean(deltap97.5, w = cos(lat*pi/180))), by = .(region, land, model)] |> 
   ggplot(aes(mean_eke, mean_deltat)) +
   geom_point(aes(color = region, shape = land), size = 2) +
   geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
@@ -426,7 +426,7 @@ deltat_mean <- data |>
   dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, .(mean_dt = mean(deltap97.5-1, na.rm = TRUE)), by = .(lat, land)]
+  _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land)]
 
 mean_trend_dt <- data |> 
   _[(model %in% models_in_gadi) & is.finite(change)] |>
@@ -434,7 +434,7 @@ mean_trend_dt <- data |>
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   _[, .(mean_eke = mean(eke, na.rm = TRUE)), by = .(lat, land, model)] |> 
-  ggplot(aes(mean_eke-1, lat)) +
+  ggplot(aes(mean_eke, lat)) +
   geom_hline(yintercept = 0, color = "grey80") +
   geom_vline(xintercept = 0, color = "grey80") +
   geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
