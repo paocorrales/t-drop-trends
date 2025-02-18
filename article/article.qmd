@@ -66,6 +66,57 @@ global_map <- rnaturalearth::ne_coastline()
 models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0", 
                     "MPI-ESM1-2-HR", "NorESM2-MM", "EC-Earth3-CC", "EC-Earth3-Veg",
                     "EC-Earth3-Veg-LR", "GFDL-CM4")
+
+data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_{scenario}_mean.nc", "{var}_{model}_{scenario}_mean.nc"))
+  
+  if (meta[[1]][["var"]] == "eke") {
+    var <- "ua"
+  } else {
+    var <- "tasmax"
+  }
+  file_scenario <- here(paste0("data/eke_mean/", meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585_mean.nc"))
+  
+  ReadNetCDF(f, vars = c(hist = var)) |> 
+    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
+    _[, let(model = meta[[1]][["model"]],
+            var = meta[[1]][["var"]],
+            change = ssp585 / hist,
+            diff = ssp585 - hist,
+            lat = round(lat, digits = 8),
+            plev = NULL)] |> 
+    _[]
+  
+}) |> rbindlist() 
+
+tas <- purrr::map(Sys.glob(here("data/tas/*hist*.nc")), function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), patterns = c("{var}_day_{model}_{scenario}_{member}_{grid}_20150101-21001231.nc"))
+  
+  file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/", 
+                                        meta[[1]][["var"]], "_day_", meta[[1]][["model"]], "_ssp585*")))
+  
+  var <- meta[[1]][["var"]]
+  
+  ReadNetCDF(f, vars = c(hist = var)) |> 
+    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
+    _[, let(model = meta[[1]][["model"]],
+            var = "dt_dy",
+            lat = round(lat, digits = 8),
+            hist = metR:::.derv(hist, lat)*(180/pi/6371000),
+            ssp585 = metR:::.derv(ssp585, lat)*(180/pi/6371000)), by = .(lon)] |> 
+    _[, let(change = ssp585 / hist,
+            diff = ssp585 - hist)]
+  
+}) |> rbindlist() 
+
+data <- rbind(data, tas) |> 
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] 
+
 ```
 
 
@@ -146,36 +197,12 @@ In the Southern Hemisphere over land, the change is generally positive with 5 ev
 #| fig-height: 4
 #| fig.cap: "a) Multimodel change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. High topography areas are gray-shaded. Dotted areas show where at least 90% of the models agree in the sign of change"
 
-data <- purrr::map(Sys.glob(here("data/eke_mean/*hist*mean.nc")), function(f) {
-  
-  message(f)
-  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_{scenario}_mean.nc", "{var}_{model}_{scenario}_mean.nc"))
-  
-  if (meta[[1]][["var"]] == "eke") {
-    var <- "ua"
-  } else {
-    var <- "tasmax"
-  }
-  file_scenario <- here(paste0("data/eke_mean/", meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585_mean.nc"))
-  
-  ReadNetCDF(f, vars = c(hist = var)) |> 
-    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
-    _[, let(model = meta[[1]][["model"]],
-            var = meta[[1]][["var"]],
-            change = ssp585 / hist,
-            diff = ssp585 - hist,
-            lat = round(lat, digits = 8),
-            plev = NULL)] |> 
-    _[]
-  
-}) |> rbindlist()
-
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 
   ReadNetCDF()
 
 sig <- data |> 
-  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  _[(model %in% models_in_gadi) & var == "deltap97.5"] |>
   dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, .(sig = sum(sign(deltap97.5), na.rm = TRUE)), by = .(lon, lat)] 
 
@@ -206,7 +233,7 @@ map_trend <- data |>
 annotation <- data.frame(ymin = -66, ymax = -56, xmin = -Inf, xmax = Inf, land = "Land")
 
 mean_trend <- data |> 
-  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  _[(model %in% models_in_gadi) & var == "deltap97.5"] |>
   dcast(lat + lon + model ~ var, value.var = "diff") |> 
   _[, let(land = MaskLand(lon, lat))] |> 
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
@@ -262,8 +289,6 @@ serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc"
   _[, let(scenario = factor(scenario, labels = c("Historical", "SSP5-8.5")))]
 
 model_spread <- data |> 
-  _[, let(land = MaskLand(lon, lat))] |> 
-  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   _[, let(serie = fcase(lat %between% c(48, 50), "50 - NH",
                         lat %between% c(38, 40), "40 - NH",
                         lat %between% c(28, 30), "30 - NH", 
@@ -393,20 +418,37 @@ dist |>
 #| label: fig-eke
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "Mean change in EKE and $\\Delta T$ frequency for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 65$^{\\circ}$) and southern (-25$^{\\circ}$ to -65$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere. b) and c) show the zonal mean for EKE ($m^2 s^{-2}$) and $\\Delta T$ (days/year) over land and sea respectively"
+#| fig.cap: "Mean change in $\\Delta T$ frequency and a) $\\nabla _{y}$ and b) EKE for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 65$^{\\circ}$) and southern (-25$^{\\circ}$ to -65$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere."
 
 change <- data |> 
-  _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "diff") |> 
+  _[(model %in% models_in_gadi)] |>
+  dcast(lat + lon + model + land ~ var, value.var = "diff") |> 
   
-  _[, let(land = MaskLand(lon, lat),
-          region = fcase(lat %between% c(25, 65), "NH",
+  _[, let(region = fcase(lat %between% c(25, 65), "NH",
                          lat %between% c(-65, -25), "SH",
                          default = NA))] |> 
-  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  na.omit() |> 
-  _[, .(mean_eke = weighted.mean(eke, w = cos(lat*pi/180)),
-        mean_deltat = weighted.mean(deltap97.5, w = cos(lat*pi/180))), by = .(region, land, model)] |> 
+  _[, .(mean_eke = weighted.mean(eke, w = cos(lat*pi/180), na.rm = TRUE),
+        mean_dt_dy = weighted.mean(dt_dy, w = cos(lat*pi/180), na.rm = TRUE),
+        mean_deltat = weighted.mean(deltap97.5, w = cos(lat*pi/180), na.rm = TRUE)), by = .(region, land, model)] |> 
+  na.omit()
+
+gradt <- change |> 
+  _[, let(mean_dt_dy = fifelse(region == "NH", -mean_dt_dy, mean_dt_dy))] |> 
+  ggplot(aes(mean_dt_dy*1000, mean_deltat)) +
+  geom_point(aes(color = region, shape = land), size = 2) +
+  geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
+  scale_color_manual(values = c("cyan4", "orange")) +
+  labs(x = latex2exp::TeX("$\\nabla _{y} T$ change (K/km)"), y = latex2exp::TeX("$\\Delta T$ frequency change (days/year)"),
+       color = NULL, shape = NULL) +
+  theme_minimal() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.83, 0.08),
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
+        legend.margin = margin(-3, 0, 0, 0, unit = "mm"),
+        panel.background = element_rect(fill = "#fbfbfb", color = NA))
+
+eke <- change |> 
   ggplot(aes(mean_eke, mean_deltat)) +
   geom_point(aes(color = region, shape = land), size = 2) +
   geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
@@ -421,49 +463,49 @@ change <- data |>
         legend.margin = margin(-3, 0, 0, 0, unit = "mm"),
         panel.background = element_rect(fill = "#fbfbfb", color = NA))
 
-deltat_mean <- data |> 
-  _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "diff") |> 
-  _[, let(land = MaskLand(lon, lat))] |> 
-  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land)]
+# deltat_mean <- data |> 
+#   _[(model %in% models_in_gadi) & is.finite(change)] |>
+#   dcast(lat + lon + model ~ var, value.var = "diff") |> 
+#   _[, let(land = MaskLand(lon, lat))] |> 
+#   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+#   _[, .(mean_dt = mean(deltap97.5, na.rm = TRUE)), by = .(lat, land)]
+# 
+# mean_trend_dt <- data |> 
+#   _[(model %in% models_in_gadi) & is.finite(change)] |>
+#   dcast(lat + lon + model ~ var, value.var = "diff") |> 
+#   _[, let(land = MaskLand(lon, lat))] |> 
+#   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+#   _[, .(mean_eke = mean(eke, na.rm = TRUE)), by = .(lat, land, model)] |> 
+#   ggplot(aes(mean_eke, lat)) +
+#   geom_hline(yintercept = 0, color = "grey80") +
+#   geom_vline(xintercept = 0, color = "grey80") +
+#   geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
+#   stat_summary(orientation = "y", geom = "line", aes(color = "EKE")) +
+#   geom_path(data = deltat_mean, aes(x = mean_dt, color = "DeltaT")) +
+#   scale_color_manual(values = c("DeltaT" = "red4", "EKE" = "black"),
+#                      labels = c(latex2exp::TeX("$\\Delta T$"), "EKE")) +
+#   geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+#             fill = "#fbfbfb",
+#             data = annotation,
+#             inherit.aes = FALSE) +
+#   annotate(geom = "rect", ymin = c(-90, -20, 90), ymax = c(-65, 20, 65), xmin = -Inf, xmax = Inf,
+#            fill = "grey93", alpha = 0.7) +
+#   scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+#   facet_wrap(~land) +
+#   tagger::tag_facets(tag_pool = c("b", "c")) +
+#   labs(x = "Change", color = NULL) +
+#   theme_minimal() +
+#   theme(legend.position = "bottom",
+#         panel.background = element_rect(fill = "#fbfbfb", color = NA),
+#         strip.text.x = element_text(size = 12),
+#         plot.margin = unit(c(0, 0 , 0, -0.40), units = "cm"),
+#         tagger.panel.tag.text = element_text(size = 12)) 
 
-mean_trend_dt <- data |> 
-  _[(model %in% models_in_gadi) & is.finite(change)] |>
-  dcast(lat + lon + model ~ var, value.var = "diff") |> 
-  _[, let(land = MaskLand(lon, lat))] |> 
-  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
-  _[, .(mean_eke = mean(eke, na.rm = TRUE)), by = .(lat, land, model)] |> 
-  ggplot(aes(mean_eke, lat)) +
-  geom_hline(yintercept = 0, color = "grey80") +
-  geom_vline(xintercept = 0, color = "grey80") +
-  geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
-  stat_summary(orientation = "y", geom = "line", aes(color = "EKE")) +
-  geom_path(data = deltat_mean, aes(x = mean_dt, color = "DeltaT")) +
-  scale_color_manual(values = c("DeltaT" = "red4", "EKE" = "black"),
-                     labels = c(latex2exp::TeX("$\\Delta T$"), "EKE")) +
-  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-            fill = "#fbfbfb",
-            data = annotation,
-            inherit.aes = FALSE) +
-  annotate(geom = "rect", ymin = c(-90, -20, 90), ymax = c(-65, 20, 65), xmin = -Inf, xmax = Inf,
-           fill = "grey93", alpha = 0.7) +
-  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
-  facet_wrap(~land) +
-  tagger::tag_facets(tag_pool = c("b", "c")) +
-  labs(x = "Change", color = NULL) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        panel.background = element_rect(fill = "#fbfbfb", color = NA),
-        strip.text.x = element_text(size = 12),
-        plot.margin = unit(c(0, 0 , 0, -0.40), units = "cm"),
-        tagger.panel.tag.text = element_text(size = 12)) 
-
-plot_grid(change, mean_trend_dt, labels = c('a)', ''), 
-          label_x = 0.10, label_y = 0.98,
+plot_grid(gradt, eke, labels = c('a)', 'b)'), 
+          label_x = 0.12, label_y = 0.98,
           label_fontface = "plain", 
           label_colour = "black",
-          rel_widths = c(1.75, 1))
+          rel_widths = c(1, 1))
 ```
 
 
