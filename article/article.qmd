@@ -23,6 +23,14 @@ author:
         country: Australia
     orcid: 0000-0001-8715-9476
     email: martin.singh@monash.edu
+  - name: Michael J. Reeder
+    affiliations:
+      - name: Monash University
+        department: School of Earth, Atmosphere and Environment
+        region: Victoria
+        country: Australia
+    orcid: 0000-0001-8715-check
+    email: fake_email@fakeyfake.com
 abstract: |
   The abstract (1) states the nature of the investigation and (2) summarizes the important conclusions. The abstract should be suitable for indexing. Your abstract should:
 
@@ -67,17 +75,25 @@ models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0",
                     "MPI-ESM1-2-HR", "NorESM2-MM", "EC-Earth3-CC", "EC-Earth3-Veg",
                     "EC-Earth3-Veg-LR", "GFDL-CM4")
 
-data <- purrr::map(c(Sys.glob(here("data/eke_mean/*hist*mean.nc")), Sys.glob(here("data/deltat/*hist*mean.nc"))), function(f) {
+file_list <- c(Sys.glob(here("data/eke/*hist*mean.nc")), 
+               Sys.glob(here("data/deltat/*hist*mean.nc")),
+               Sys.glob(here("data/tos/*hist*mean.nc")))
+
+data <- purrr::map(file_list, function(f) {
   
   message(f)
-  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_{scenario}_mean.nc", "{var}_{model}_{scenario}_mean.nc"))
+  meta <- unglue::unglue(basename(f), "{var}_{model}_{scenario}_mean.nc")
   
   if (meta[[1]][["var"]] == "eke") {
     var <- "ua"
-  } else {
+  } else if (meta[[1]][["var"]] == "deltap97.5") {
     var <- "tasmax"
+    meta[[1]][["var"]] <- "deltat"
+  } else {
+    var <- "tos"
   }
-  file_scenario <- Sys.glob(here(paste0("data/", c("eke_mean", "deltat"), "/", meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585_mean.nc")))
+  
+  file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/*_", meta[[1]][["model"]], "_ssp585_mean.nc")))
   
   ReadNetCDF(f, vars = c(hist = var)) |> 
     _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
@@ -196,7 +212,7 @@ In the Southern Hemisphere over land, the change is generally positive with 5 ev
 #| label: fig-trend
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "a) Multimodel change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. High topography areas are gray-shaded. Dotted areas show where at least 90% of the models agree in the sign of change"
+#| fig.cap: "a) Multimodel change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. High topography areas are gray-shaded. Dotted areas show where at least 90% of the models agree in the sign of change."
 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 
@@ -412,9 +428,9 @@ dist |>
 
 ```
 
-@fig-eke explores the relationship between the change in the frequency of $\Delta T$ and the response of $\partial T / \partial y $ and EKE by comparing the scenario SSP5-8.5 (2080-2100) and the recent past (1980-2000). There is a positive relationship between the changes in $\Delta T$ and $\partial T / \partial y$ in both hemispheres. The reduction in the frequency of fronts in the Northern Hemisphere could be associated to the decrease of $\partial T / \partial y$ in low levels already shown by other authors [e.g. @catto2014] while the opposite is true for the Southern Hemisphere (@fig-eke a). 
+@fig-eke explores the relationship between the change in the frequency of $\Delta T$ and the response of $\partial T / \partial y$ and EKE by comparing the scenario SSP5-8.5 (2080-2100) and the recent past (1980-2000). There is a positive relationship between the changes in $\Delta T$ and $\partial T / \partial y$ in both hemispheres. The reduction in the frequency of fronts in the Northern Hemisphere could be associated to the decrease of $\partial T / \partial y$ in low levels already shown by other authors [e.g. @catto2014] while the opposite is true for the Southern Hemisphere (@fig-eke a). 
 We see a similar relationship between changes in $\Delta T$ and EKE except for the Southern Hemisphere over land. The reason for this it is difference could be associated to many factors. 
-The change of the stormtracks in the SH is mainly associated to a poleward shift and may not have an effect on frequency of fronts over land the same way the $\partial T / \partial y$ does. @harvey2013 found that the stormtrack response in the SH during summer is associated to the change in the low level $\partial T / \partial y$ mainly bellow 65$^{\\circ}$ S, i.e. over the southern oceans. 
+The change of the stormtracks in the SH is mainly associated to a poleward shift and may not have an effect on frequency of fronts over land the same way the $\partial T / \partial y$ does. @harvey2014 found that the stormtrack response in the SH during summer is associated to the change in the low level $\partial T / \partial y$ mainly bellow 65$^{\circ}$ S, i.e. over the southern oceans. 
 
 
 ```{r}
