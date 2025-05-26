@@ -76,10 +76,9 @@ models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0",
                     "EC-Earth3-Veg-LR", "GFDL-CM4")
 
 file_list <- c(Sys.glob(here("data/eke/*hist*mean.nc")), 
-               Sys.glob(here("data/deltat/*hist*mean.nc")),
-               Sys.glob(here("data/tos/*hist*mean.nc")))
+               Sys.glob(here("data/deltat/*hist*mean.nc")))
 
-data <- purrr::map(file_list, function(f) {
+delta <- purrr::map(file_list, function(f) {
   
   message(f)
   meta <- unglue::unglue(basename(f), "{var}_{model}_{scenario}_mean.nc")
@@ -107,20 +106,20 @@ data <- purrr::map(file_list, function(f) {
   
 }) |> rbindlist() 
 
-tas <- purrr::map(Sys.glob(here("data/tas/*hist*.nc")), function(f) {
+tas <- purrr::map(Sys.glob(here("data/tas/*hist*mean.nc")), function(f) {
   
   message(f)
-  meta <- unglue::unglue(basename(f), patterns = c("{var}_day_{model}_{scenario}_{member}_{grid}_20150101-21001231.nc"))
+  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_historical_mean.nc"))
   
   file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/", 
-                                        meta[[1]][["var"]], "_day_", meta[[1]][["model"]], "_ssp585*")))
+                                        meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585*")))
   
   var <- meta[[1]][["var"]]
   
   ReadNetCDF(f, vars = c(hist = var)) |> 
     _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
     _[, let(model = meta[[1]][["model"]],
-            var = "dt_dy",
+            var = var,
             lat = round(lat, digits = 8),
             hist = metR:::.derv(hist, lat)*(180/pi/6371000),
             ssp585 = metR:::.derv(ssp585, lat)*(180/pi/6371000)), by = .(lon)] |> 
@@ -129,9 +128,40 @@ tas <- purrr::map(Sys.glob(here("data/tas/*hist*.nc")), function(f) {
   
 }) |> rbindlist() 
 
-data <- rbind(data, tas) |> 
-  _[, let(land = MaskLand(lon, lat))] |> 
-  _[, let(land = factor(land, labels = c("Sea", "Land")))] 
+tos <- purrr::map(Sys.glob(here("data/tos/*hist*mean.nc")), function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_historical_mean.nc"))
+  
+  file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/", 
+                                        meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585*")))
+  
+  var <- meta[[1]][["var"]]
+  
+  ReadNetCDF(f, vars = c(hist = var)) |> 
+    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
+    _[, let(model = meta[[1]][["model"]],
+            lat = round(lat, digits = 8),
+            var = var,
+            dt_dy_hist = metR:::.derv(hist, lat)*(180/pi/6371000),
+            dt_dy_ssp585 = metR:::.derv(ssp585, lat)*(180/pi/6371000)), by = .(lon)] |> 
+    _[, let(cos_lat = cos(lat*180/pi))] |> 
+    _[, let(dt_dx_hist = metR:::.derv(hist, lon)*(180/pi/6371000)*cos_lat,
+            dt_dx_ssp585 = metR:::.derv(ssp585, lon)*(180/pi/6371000)*cos_lat), by = .(lat)] |> 
+    _[, let(change = sqrt(dt_dx_ssp585^2 + dt_dy_ssp585^2) / sqrt(dt_dx_hist^2 + dt_dy_hist^2),
+            diff = sqrt(dt_dx_ssp585^2 + dt_dy_ssp585^2) - sqrt(dt_dx_hist^2 + dt_dy_hist^2))] |> 
+    _[, .(time, lat, lon, hist, ssp585, model, var, change, diff)]
+  
+}) |> rbindlist() 
+
+mask <- tos[var == "tos" & model == "NorESM2-MM", .(lon, lat, hist)] |> 
+  _[, let(land = fifelse(!is.na(hist), "Land", "Sea"))] |> 
+  _[, .(lon, lat, land)]
+
+data <- rbindlist(list(delta, tas, tos)) |> 
+  mask[x = _, on = .NATURAL]
+  # _[, let(land = MaskLand(lon, lat))] |> 
+  # _[, let(land = factor(land, labels = c("Sea", "Land")))] 
 
 ```
 
