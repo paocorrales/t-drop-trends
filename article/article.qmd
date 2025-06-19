@@ -84,6 +84,8 @@ delta <- purrr::map(file_list, function(f) {
   message(f)
   meta <- unglue::unglue(basename(f), "{var}_{model}_{scenario}_mean.nc")
   
+  # file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/*_", meta[[1]][["model"]], "_ssp585_mean.nc")))
+  
   if (meta[[1]][["var"]] == "eke") {
     var <- "ua"
   } else if (meta[[1]][["var"]] == "deltap97.5") {
@@ -129,40 +131,40 @@ tas <- purrr::map(Sys.glob(here("data/tas/*hist*mean.nc")), function(f) {
   
 }) |> rbindlist() 
 
-tos <- purrr::map(Sys.glob(here("data/tos/*hist*mean.nc")), function(f) {
-  
-  message(f)
-  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_historical_mean.nc"))
-  
-  file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/", 
-                                        meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585*")))
-  
-  var <- meta[[1]][["var"]]
-  
-  ReadNetCDF(f, vars = c(hist = var)) |> 
-    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
-    _[, let(model = meta[[1]][["model"]],
-            lat = round(lat, digits = 8),
-            var = var,
-            dt_dy_hist = metR:::.derv(hist, lat)*(180/pi/6371000),
-            dt_dy_ssp585 = metR:::.derv(ssp585, lat)*(180/pi/6371000)), by = .(lon)] |> 
-    _[, let(cos_lat = cos(lat*pi/180))] |> 
-    _[, let(dt_dx_hist = metR:::.derv(hist, lon)*(180/pi/6371000)*cos_lat,
-            dt_dx_ssp585 = metR:::.derv(ssp585, lon)*(180/pi/6371000)*cos_lat), by = .(lat)] |> 
-    _[, let(change = sqrt(dt_dx_ssp585^2 + dt_dy_ssp585^2) / sqrt(dt_dx_hist^2 + dt_dy_hist^2),
-            diff = sqrt(dt_dx_ssp585^2 + dt_dy_ssp585^2) - sqrt(dt_dx_hist^2 + dt_dy_hist^2))] |> 
-    _[, .(time, lat, lon, hist, ssp585, model, var, change, diff)]
-  
-}) |> rbindlist() 
+# tos <- purrr::map(Sys.glob(here("data/tos/*hist*mean.nc")), function(f) {
+#   
+#   message(f)
+#   meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_historical_mean.nc"))
+#   
+#   file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/", 
+#                                         meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585*")))
+#   
+#   var <- meta[[1]][["var"]]
+#   
+#   ReadNetCDF(f, vars = c(hist = var)) |> 
+#     _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
+#     _[, let(model = meta[[1]][["model"]],
+#             lat = round(lat, digits = 8),
+#             var = var,
+#             dt_dy_hist = metR:::.derv(hist, lat)*(180/pi/6371000),
+#             dt_dy_ssp585 = metR:::.derv(ssp585, lat)*(180/pi/6371000)), by = .(lon)] |> 
+#     _[, let(cos_lat = cos(lat*pi/180))] |> 
+#     _[, let(dt_dx_hist = metR:::.derv(hist, lon)*(180/pi/6371000)*cos_lat,
+#             dt_dx_ssp585 = metR:::.derv(ssp585, lon)*(180/pi/6371000)*cos_lat), by = .(lat)] |> 
+#     _[, let(change = sqrt(dt_dx_ssp585^2 + dt_dy_ssp585^2) / sqrt(dt_dx_hist^2 + dt_dy_hist^2),
+#             diff = sqrt(dt_dx_ssp585^2 + dt_dy_ssp585^2) - sqrt(dt_dx_hist^2 + dt_dy_hist^2))] |> 
+#     _[, .(time, lat, lon, hist, ssp585, model, var, change, diff)]
+#   
+# }) |> rbindlist() 
+# 
+# mask <- tos[var == "tos" & model == "NorESM2-MM", .(lon, lat, hist)] |> 
+#   _[, let(land = fifelse(!is.na(hist), "Land", "Sea"))] |> 
+#   _[, .(lon, lat, land)]
 
-mask <- tos[var == "tos" & model == "NorESM2-MM", .(lon, lat, hist)] |> 
-  _[, let(land = fifelse(!is.na(hist), "Land", "Sea"))] |> 
-  _[, .(lon, lat, land)]
-
-data <- rbindlist(list(delta, tas, tos)) |> 
-  mask[x = _, on = .NATURAL]
-  # _[, let(land = MaskLand(lon, lat))] |> 
-  # _[, let(land = factor(land, labels = c("Sea", "Land")))] 
+data <- rbindlist(list(delta, tas)) |> 
+  # mask[x = _, on = .NATURAL]
+  _[, let(land = MaskLand(lon, lat))] |>
+  _[, let(land = factor(land, labels = c("Sea", "Land")))]
 
 ```
 
@@ -337,18 +339,19 @@ serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc"
   _[, let(scenario = factor(scenario, labels = c("Historical", "SSP5-8.5")))]
 
 model_spread <- data |> 
-  _[, let(serie = fcase(lat %between% c(48, 50), "50 - NH",
-                        lat %between% c(38, 40), "40 - NH",
-                        lat %between% c(28, 30), "30 - NH", 
-                        lat %between% c(-50, -48), "50 - SH",
-                        lat %between% c(-40, -38), "40 - SH",
-                        lat %between% c(-30, -28), "30 - SH"))] |>
-  _[!is.na(serie) & var == "deltat" & model %in% models_in_gadi] |>
+  _[var == "deltat" & model %in% models_in_gadi] |> 
+  _[, let(serie = fcase(lat %between% c(48, 50), "50° - NH",
+                        lat %between% c(38, 40), "40° - NH",
+                        lat %between% c(28, 30), "30° - NH", 
+                        lat %between% c(-50, -48), "50° - SH",
+                        lat %between% c(-40, -38), "40° - SH",
+                        lat %between% c(-30, -28), "30° - SH"))] |>
+  _[!is.na(serie)] |>
   _[, .(mean_freq = weighted.mean(ssp585, cos(lat*pi/180))), by = .(serie, land, model)] |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
   _[, let(scenario = "SSP5-8.5")] |> 
-  _[!(land == "Land" & hemisphere == "SH" & lat == 50)]
+  _[!(land == "Land" & hemisphere == "SH" & lat == "50°")]
 
 serie_regions <- serie |>
   _[!(year == 2014 & scenario != "historical")] |>
@@ -424,21 +427,23 @@ dist <- purrr::map(file_list, function(f) {
   _[, let(land = factor(land, labels = c("Sea", "Land")))] 
 
 dist |> 
-  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50 - NH",
-                        lat %between% c(38, 40) & land == "Sea", "40 - NH",
-                        lat %between% c(28, 30) & land == "Sea", "30 - NH", 
-                        lat %between% c(48, 50) & land == "Land", "50 - NH",
-                        lat %between% c(38, 40) & land == "Land", "40 - NH",
-                        lat %between% c(28, 30) & land == "Land", "30 - NH",
-                        lat %between% c(-50, -48) & land == "Land", "50 - SH",
-                        lat %between% c(-40, -38) & land == "Land", "40 - SH",
-                        lat %between% c(-30, -28) & land == "Land", "30 - SH",
-                        lat %between% c(-50, -48) & land == "Sea", "50 - SH",
-                        lat %between% c(-40, -38) & land == "Sea", "40 - SH",
-                        lat %between% c(-30, -28) & land == "Sea", "30 - SH"))] |>
+  _[, let(serie = fcase(lat %between% c(48, 50) & land == "Sea", "50° - NH",
+                        lat %between% c(38, 40) & land == "Sea", "40° - NH",
+                        lat %between% c(28, 30) & land == "Sea", "30° - NH", 
+                        lat %between% c(48, 50) & land == "Land", "50° - NH",
+                        lat %between% c(38, 40) & land == "Land", "40° - NH",
+                        lat %between% c(28, 30) & land == "Land", "30° - NH",
+                        lat %between% c(-50, -48) & land == "Land", "50° - SH",
+                        lat %between% c(-40, -38) & land == "Land", "40° - SH",
+                        lat %between% c(-30, -28) & land == "Land", "30° - SH",
+                        lat %between% c(-50, -48) & land == "Sea", "50° - SH",
+                        lat %between% c(-40, -38) & land == "Sea", "40° - SH",
+                        lat %between% c(-30, -28) & land == "Sea", "30° - SH"))] |>
   _[!is.na(serie)] |> 
   _[, .(mean_freq = weighted.mean(mean_freq, cos(lat*pi/180))), by = .(land, serie, percentile, scenario)] |> 
   dcast(land + serie + percentile ~ scenario, value.var = "mean_freq") |> 
+  _[, let(historical = fifelse(serie  == "50° - SH" & land == "Land", 0, historical),
+          ssp585 = fifelse(serie  == "50° - SH" & land == "Land", 0, ssp585))] |> 
   tidyr::separate(serie, into = c("lat", "hemisphere"), sep = " - ") |> 
   setDT() |> 
   ggplot(aes(factor(round(100-as.numeric(percentile), digits = 1)), ssp585 / historical)) +
