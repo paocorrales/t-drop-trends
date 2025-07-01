@@ -509,14 +509,14 @@ One important factor not analyzed here is the role of sea surface temperature (S
 
 ## Acknowledgments
 
-This work was supported by part by the Australian Research Council Centre of Excellence for Climate Extremes grant CE170100023. This research was undertaken with the assistance of resources from the National Computational Infrastructure (NCI Australia), an NCRIS enabled capability supported by the Australian Government. 
+This work was supported by the Australian Research Council Centre of Excellence for Climate Extremes grant CE170100023. This research was undertaken with the assistance of resources from the National Computational Infrastructure (NCI Australia), an NCRIS enabled capability supported by the Australian Government. 
 P.C. also acknowledges the use of the following open-source software projects that supported data analysis, visualization, and reproducible reporting: R (v4.3.1, @R), metR [@metR], rcdo [@rcdo], data.table [@data.table], ggplot2 [@ggplot2], patchwork [@patchwork], cowplot [@cowplot], ggside [@ggside], Quarto [@quarto].
 
 **Should I also mention 21st century weather?**
 
 ## Open research
 
-The data used in the manuscript is publicly available for CMIP6 data at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at http://doi.org/, version 0.xx. 
+The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at http://doi.org/, version 0.xx. 
 
 
 ## References {.unnumbered}
