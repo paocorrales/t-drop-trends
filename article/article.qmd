@@ -218,7 +218,7 @@ This pattern indicates that the areas of higher front frequency shift poleward i
 #| label: fig-trend
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "a) Multimodel average change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents the models listed in Table 1 and in black, the multimodel mean. In a) high topography areas are gray-shaded and dotted areas show where at least 90% of the models agree in the sign of change."
+#| fig.cap: "a) Multimodel average change in the frequency of $\\Delta T$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents a model listed in Table 1 and a black line represents the multimodel mean. In a) dotted areas show where at least 90% of the models agree in the sign of change."
 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 
@@ -241,17 +241,19 @@ map_trend <- data |>
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
   geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 9], alpha = 0.3, shape = 4, size = 0.1) +
-  ggnewscale::new_scale_fill() +
-  geom_contour_fill(data = topo, aes(ConvertLongitude(lon), lat, z = topo), breaks = c(1300, Inf), fill = "grey90") +
+  # ggnewscale::new_scale_fill() +
+  # geom_contour_fill(data = topo, aes(ConvertLongitude(lon), lat, z = topo), breaks = c(1300, Inf), fill = "grey90") +
+  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
   coord_sf(expand = FALSE, xlim = c(-179, 180)) +
   labs(x = NULL, y = NULL, fill = "days/year") +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom",
         legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
         legend.key.width = grid::unit(1, 'null'),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(), 
-        plot.margin = unit(c(0, -0.4 , 0 , 0), units = "cm")) 
+        legend.margin = unit(c(-1, 0, -1, 0), units = "cm"), 
+        # axis.text.y = element_blank(),
+        # axis.ticks.y = element_blank(),
+        plot.margin = unit(c(-0.5, 0 , -0.5, 0), units = "cm")) 
 
 annotation <- data.frame(ymin = -66, ymax = -56, xmin = -Inf, xmax = Inf, land = "Land")
 
@@ -262,11 +264,10 @@ mean_trend <- data |>
   _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
   _[, .(mean_dt = mean(deltat, na.rm = TRUE)), by = .(lat, land, model)] |> 
   ggplot(aes(mean_dt, lat)) +
-  geom_hline(yintercept = 0, color = "grey80") +
-  geom_vline(xintercept = 0, color = "grey80") +
+  geom_vline(xintercept = 0, color = "grey50") +
   geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
   stat_summary(orientation = "y", geom = "line") +
-  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  scale_y_latitude(breaks = seq(-80, 80 , 20), position = "right") +
   geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
             fill = "#fbfbfb",
             data = annotation,
@@ -280,7 +281,7 @@ mean_trend <- data |>
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         panel.grid.minor = element_line(linewidth = 0.1),
         strip.text.x = element_text(size = 12),
-        plot.margin = unit(c(0, 0 , 1.9, -0.40), units = "cm"),
+        plot.margin = unit(c(0.15, 0, 1.75, 0.25), units = "cm"),
         tagger.panel.tag.text = element_text(size = 12),
         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
@@ -288,7 +289,7 @@ plot_grid(map_trend, mean_trend, labels = c('a)', ''),
           label_x = 0, label_y = 0.94,
           label_fontface = "plain", 
           label_colour = "white",
-          rel_widths = c(1.75, 1))
+          rel_widths = c(2.25, 1))
 
 ```
 
@@ -301,7 +302,7 @@ While there is considerable variation between models in these trends (see boxplo
 #| label: fig-serie
 #| fig-width: 8
 #| fig-height: 5
-#| fig.cap: "Multimodel mean frequency of $\\Delta T$ for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different 2° wide latitude bands centered at 30, 40 and 50°. Right to each main subfigure the intermodel distribution is shown for the period 2080-2100."
+#| fig.cap: "Multimodel mean frequency of $\\Delta T$ for the historical period (1850-2014) and SSP5-8.5 (2015-2100) over land and sea for different 2° wide latitude bands centered at 30, 40 and 50°. The grey line represents the climatological frecuency for 1979-2014, equal to 9.125 $\\Delta T$/year. On the right of each panel the intermodel distribution is shown for the period 2080-2100. In the boxplots the lower and upper hinges correspond to the first and third quartiles and the upper (lower) whisker extends to the largest (smallest) value no further than 1.5 * inter-quartile range. Outside the whiskers dots represents outliners."
 
 serie <- purrr::map(Sys.glob(here("data/series/serie_freq_deltap97.5_*_100km.nc")), function(f) {
   
@@ -348,8 +349,11 @@ serie_regions |>
   setDT() |> 
   _[year >= 1900] |> 
   ggplot(aes(year, mean_freq, color = lat, group = interaction(scenario, lat))) +
+  
+  # geom_hline(yintercept = 9.125, color = "grey50", linewidth = 1, xini = 1900) +
   geom_line(alpha = 0.3) +
   geom_smooth(method = "lm", se = FALSE) +
+  geom_segment(x = 1900, xend = 2100, y = 9.125, yend = 9.125, color = "grey50") +
   geom_ysideboxplot(data = model_spread, aes(x = lat), orientation = "x") +
   scale_color_manual(values = c("#004C73", "#CC3311", "#ee8a33")) + 
   facet_grid(land~hemisphere, scale = "free") +
@@ -374,7 +378,7 @@ However, it is important to note that lower percentiles thresholds are associate
 #| label: fig-distribution
 #| fig-width: 8
 #| fig-height: 5
-#| fig.cap: "Fractional change in the frequency of $\\Delta T$ (SSP5-8.5 2018-2100 divided Historical 1980-2000) for different thresholds defined as the percentile value for each grid point and model calculated over the historical period (1979-2014)."
+#| fig.cap: "Fractional change in the frequency of strong $\\Delta T$ averaged between the years 2081-2100 under the SSP5-8.5 scenario compared to that averaged between 1980-2000 in the historical scenario, for different thresholds defined by their percentile value for each grid point and model calculated over the historical period (1979-2014)."
 
 file_list <- Sys.glob(here(paste0("data/series/serie_freq_deltap9*", c("historical", "ssp585"), "*")))
 
@@ -460,7 +464,7 @@ Notwithstanding the above caveat, our results suggest that changes in the mean m
 #| label: fig-eke
 #| fig-width: 8
 #| fig-height: 4
-#| fig.cap: "Mean change in $\\Delta T$ frequency and a) $\\partial \\bar{T} / \\partial y$ and b) EKE for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 65$^{\\circ}$) and southern (-25$^{\\circ}$ to -65$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere."
+#| fig.cap: "Mean change in the mean $\\Delta T$ frequency and a) mean merdional temperature gradient $\\partial \\bar{T} / \\partial y$ and b) the eddy kinetic energy of the storm track EKE for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model. Values are calculated for the northern (25$^{\\circ}$ to 65$^{\\circ}$) and southern (-25$^{\\circ}$ to -65$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere."
 
 change <- data |> 
   _[(model %in% models_in_gadi)] |>
