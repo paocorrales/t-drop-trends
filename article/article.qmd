@@ -554,7 +554,7 @@ P.C. also acknowledges the use of the following open-source software projects th
 
 ## Open research
 
-The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at http://doi.org/, version 0.xx. 
+The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at <https://zenodo.org/records/19840311>, version 0.9. 
 
 
 ## References {.unnumbered}
