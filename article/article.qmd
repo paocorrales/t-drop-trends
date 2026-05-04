@@ -550,11 +550,11 @@ More generally, frontal cyclogenesis is directly affected by the wind and temper
 ## Acknowledgments
 
 This research was supported by the Australian Research Council Centre of Excellence for Climate Extremes (CE170100023), the Australian Research Council Centre of Excellence for the Weather of the 21st Century (CE230100012), with the assistance of resources from the National Computational Infrastructure (NCI Australia), an NCRIS enabled capability supported by the Australian Government. 
-P.C. also acknowledges the use of the following open-source software projects that supported data analysis, visualization, and reproducible reporting: R (v4.3.1, @R), metR [@metR], rcdo [@rcdo], data.table [@data.table], ggplot2 [@ggplot2], patchwork [@patchwork], cowplot [@cowplot], ggside [@ggside], Quarto [@quarto].
+P.C. also acknowledges the use of the following open-source software projects that supported data analysis, visualization, and reproducible reporting: R (v4.3.1, @R), metR [@metR], rcdo [@rcdo], data.table [@data.table], ggplot2 [@ggplot2], patchwork [@patchwork], cowplot [@cowplot], ggside [@ggside], and Quarto [@quarto].
 
 ## Open research
 
-The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at <https://zenodo.org/records/19840311>, version 0.9. 
+The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://github.com/paocorrales/t-drop-trends>. The derived data that support the findings of this study are also openly available in Zenodo at <https://doi.org/10.5281/zenodo.19840311>, version 0.9. 
 
 
 ## References {.unnumbered}
