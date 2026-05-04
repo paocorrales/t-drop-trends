@@ -1,5 +1,7 @@
 # Trends in temperature falls
 
+[![DOI](https://zenodo.org/badge/924451737.svg)](https://doi.org/10.5281/zenodo.20019440)
+
 This repository contains the data and code for our paper:
 
 > Corrales et. at., (2026). *Using rapid temperature falls to estimate future strong cold front frequency in CMIP6 climate projections*. 
