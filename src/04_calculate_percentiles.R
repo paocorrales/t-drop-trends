@@ -13,8 +13,9 @@ models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0",
                     "MPI-ESM1-2-HR", "NorESM2-MM", "EC-Earth3-CC", "EC-Earth3-Veg",
                     "EC-Earth3-Veg-LR", "GFDL-CM4")
 
-file_list <- Sys.glob("~/t-fall/data/cmip/100km/deltat_*historical*")
-percentiles <- c(0.1, 0.5,  1, 2, 2.5, 5, 7.5, 10)
+file_list <- Sys.glob("/g/data/w40/pc2687/cf/data/old/100km/deltat_*historical*")
+# percentiles <- c(0.1, 0.5,  1, 2, 2.5, 5, 7.5, 10)
+percentiles <- 2.5
 
 future::plan(future::multisession, workers = 4)
 furrr::future_map(percentiles, function(percentile) {
@@ -32,20 +33,29 @@ furrr::future_map(percentiles, function(percentile) {
       return(f)
     }
     
-    outfile <- paste0("~/t-drop-trends/data/temp/percentiles/", "deltat_", model, "_", experiment, "_", member, "_p", 100 - percentile, "_1950-1979.nc")
-    dir.create(dirname(outfile), showWarnings = FALSE, recursive = TRUE)
+    outfile1 <- paste0("~/t-drop-trends/data/temp/percentiles/", "deltat_", model, "_", experiment, "_", member, "_p", 100 - percentile, "_1950-1979_DJF.nc")
+    outfile2 <- paste0("~/t-drop-trends/data/temp/percentiles/", "deltat_", model, "_", experiment, "_", member, "_p", 100 - percentile, "_1950-1979_JJA.nc")
+    dir.create(dirname(outfile1), showWarnings = FALSE, recursive = TRUE)
     
-    if (file.exists(outfile)) {
+    if (file.exists(outfile1)) {
       message(paste0("skiping ", basename(f)))
-      return(outfile)
+      return(outfile1)
     }
     message(paste0("processing ", basename(f)))
     
     period <- cdo_seldate(f, startdate = "1950-01-01T00:00:00", enddate = "1979-12-31T23:00:00") |>
+      cdo_selseason("DJF") |> 
       cdo_execute(options = "-L")
     
     cdo_timpctl(period, cdo_timmin(period), cdo_timmax(period),  p = percentile) |> 
-      cdo_execute(outfile, options = "-L")
+      cdo_execute(outfile1, options = "-L")
+    
+    period <- cdo_seldate(f, startdate = "1950-01-01T00:00:00", enddate = "1979-12-31T23:00:00") |>
+      cdo_selseason("JJA") |> 
+      cdo_execute(options = "-L")
+    
+    cdo_timpctl(period, cdo_timmin(period), cdo_timmax(period),  p = percentile) |> 
+      cdo_execute(outfile2, options = "-L")
     
   })
   
