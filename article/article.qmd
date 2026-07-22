@@ -44,9 +44,9 @@ author:
     orcid: 000-0002-4583-5875
     email: michael.reeder@monash.edu
 abstract: |
-We use day-to-day falls in daily-maximum surface air temperature to assess future changes in cold front frequency in a set of CMIP6 climate models under the SSP5-8.5 scenario. We find a general decrease in cold front frequency across the Northern Hemisphere, particularly over the oceans, and a poleward shift in the Southern Hemisphere, with increased frequency over midlatitude land regions. The frequency of strong temperature falls correlates positively with the meridional temperature gradient and transient eddy kinetic energy, implicating large-scale baroclinicity and storm track changes in future frontal behavior. Over Southern Hemisphere land areas, this relationship weakens, suggesting the influence of regional thermodynamic processes.
+  We use day-to-day falls in daily-maximum surface air temperature to assess future changes in cold front frequency in a set of CMIP6 climate models under the SSP5-8.5 scenario. We find a general decrease in cold front frequency across the Northern Hemisphere, particularly over the oceans, and a poleward shift in the Southern Hemisphere, with increased frequency over midlatitude land regions. The frequency of strong temperature falls correlates positively with the meridional temperature gradient and transient eddy kinetic energy, implicating large-scale baroclinicity and storm track changes in future frontal behavior. Over Southern Hemisphere land areas, this relationship weakens, suggesting the influence of regional thermodynamic processes.
 plain-language-summary: |
-Cold fronts, are defined by large temperature falls and sometimes accompanied by rain and strong wind. They play a key role in the day-to-day weather in midlatitudes. In this study, we use a simple method based on changes in maximun temperature from one day to the next to identify cold fronts in climate simulations. In the future climate projections from ten global models, cold fronts are less frequent in much of the Northern Hemisphere, especially over the oceans. In the Southern Hemisphere, however, cold fronts in the projections shift closer to the South Pole and may become more frequent over land areas like southern Australia and southern Africa. These changes are linked to shifts in the temperature contrast between the equator and the poles and the paths taken by storm systems. 
+  Cold fronts, are defined by large temperature falls and sometimes accompanied by rain and strong wind. They play a key role in the day-to-day weather in midlatitudes. In this study, we use a simple method based on changes in maximun temperature from one day to the next to identify cold fronts in climate simulations. In the future climate projections from ten global models, cold fronts are less frequent in much of the Northern Hemisphere, especially over the oceans. In the Southern Hemisphere, however, cold fronts in the projections shift closer to the South Pole and may become more frequent over land areas like southern Australia and southern Africa. These changes are linked to shifts in the temperature contrast between the equator and the poles and the paths taken by storm systems. 
 keywords: []
 keypoints: 
   - Day-to-day falls in maximun temperature are used to identify cold fronts.  
@@ -486,8 +486,8 @@ change <- data |>
   _[(model %in% models_in_gadi)] |>
   dcast(lat + lon + model + land ~ var, value.var = "diff") |> 
   
-  _[, let(region = fcase(lat %between% c(25, 55), "NH",
-                         lat %between% c(-55, -25), "SH",
+  _[, let(region = fcase(lat %between% c(25, 65), "NH",
+                         lat %between% c(-65, -25), "SH",
                          default = NA))] |> 
   _[, .(mean_eke = weighted.mean(eke, w = cos(lat*pi/180), na.rm = TRUE),
         mean_dt_dy = weighted.mean(ta, w = cos(lat*pi/180), na.rm = TRUE),

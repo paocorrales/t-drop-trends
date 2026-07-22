@@ -218,8 +218,8 @@ fronts. \item CMIP6 SSP5-8.5 scenario show a decrease in frequency of
 falls in temperature in the Northern Hemisphere, a poleward shift over
 the oceans and an increase over land in the Southern
 Hemisphere. \item Changes in cold front frequency correlated positively
-with changes in the meridional gradient of surface temperature and storm
-tracks. 
+with changes in the meridional gradient of surface temperature on both
+hemispheres and storm tracks in the Northem Hemisphere. 
 \end{keypoints}
 
 \begin{abstract}
@@ -320,18 +320,19 @@ consider again projections of the CMIP6 ensemble, but we consider a
 simpler method of estimating changes in front frequency and intensity
 with cooling based on day-to-day falls in maximum surface air
 temperature. This approach offers several advantages. First, the
-method's simplicity and resolution-independence allows us to compare it
-with earlier studies using other methodologies. Second, focusing on
-local temperature falls provides a complementary perspective to
-Lagrangian approaches, as day-to-day temperature falls are the most
-direct impact of cold fronts on local weather.
+method's simplicity and resolution-independence (as shown by
+\textbf{king2024?}) allows us to compare it with earlier studies using
+other methodologies. Second, focusing on local temperature falls
+provides a complementary perspective to Lagrangian approaches, as
+day-to-day temperature falls are the most direct impact of cold fronts
+on local weather.
 
 Consistent with Catto et al. (2014), we find a decrease in cold front
-frequency in the northern hemisphere and a poleward shift in the
+frequency in the Northern Hemisphere and a poleward shift in the
 Southern Hemisphere. Seeking to develop a physical explanation for these
-changes, we first studied the response of the meridional temperature
-gradient and it relationship with the change in front frequency. We also
-explored the relationship between changes in front frequency and
+changes, we first study the response of the meridional temperature
+gradient and its relationship with the change in front frequency. We
+also explore the relationship between changes in front frequency and
 transient eddy kinetic energy, as it is directly related to the storm
 tracks. Several studies have shown a poleward shift on the storm tracks
 in future climate change scenarios, particularly in the Southern
@@ -407,23 +408,24 @@ NorESM2-MM & & \\
 
 \subsection{Front Identification}\label{front-identification}
 
-We identify falls in surface air temperature as a proxy for frontal
-passages by calculating the change in daily maximum temperature from one
-day to the next (\(\Delta T\)). \(\Delta T\) is calculated for all grid
-points and days in the study period. King et al. (2024) defined a
-passage of a strong cold front as a \(\Delta T \le -10^{\circ}C\). That
-is, a cold front passage is identified on day \(i\) if the maximum
-temperature on day \(i+1\) is at least 10 deg C lower than that of day
-\(i\). While this value is reasonable for detecting strong falls in
-temperature over land, it may underestimate the frequency of fronts over
-the ocean due to the smaller temperature variability. For this reason,
-in this study, we use the value of the 2.5th percentile of \(\Delta T\)
-(as we want to capture the most negative temperature falls) as a
-threshold for each grid point to identify falls in temperature,
-hereafter \(\Delta T_{2.5} = \Delta T \le 2.5^{th}\) percentile. This
-percentile is chosen because the mean of the 2.5th percentile over all
-midlatitude land areas (between 25\(^{\circ}\) to 55\(^{\circ}\)) is
-close to \(-10^{\circ}C\), the threshold used by King et al. (2024). The
+We identify falls in near-surface air temperature (2 meter) as a proxy
+for frontal passages by calculating the change in daily maximum
+temperature from one day to the next (\(\Delta T\)). \(\Delta T\) is
+calculated for all grid points and days in the study period. King et al.
+(2024) defined a passage of a strong cold front as a
+\(\Delta T \le -10^{\circ}C\). That is, a cold front passage is
+identified on day \(i\) if the maximum temperature on day \(i+1\) is at
+least 10 deg C lower than that of day \(i\). While this value is
+reasonable for detecting strong falls in temperature over land, it may
+underestimate the frequency of fronts over the ocean due to the smaller
+temperature variability. For this reason, in this study, we use the
+value of the 2.5th percentile of \(\Delta T\) (as we want to capture the
+most negative temperature falls) as a threshold for each grid point to
+identify falls in temperature, hereafter
+\(\Delta T_{2.5} = \Delta T \le 2.5^{th}\) percentile. This percentile
+is chosen because the mean of the 2.5th percentile over all midlatitude
+land areas (between 25\(^{\circ}\) to 55\(^{\circ}\)) is close to
+\(-10^{\circ}C\), the threshold used by King et al. (2024). The
 percentiles are calculated over the historical period between 1979 and
 2014 for each model at each grid point. It is important to note that by
 using this threshold we detect frontal passages in exactly 2.5\% of
@@ -450,7 +452,7 @@ and sea independently.
 \subsection{Storm Tracks Estimation}\label{sec-storm-track}
 
 To estimate the storm track location we follow previous work (Chemke,
-2022; O'Gorman, 2010) and use the band-pass filtered transient eddy
+2022; O'Gorman, 2010) and use the high-pass filtered transient eddy
 kinetic energy (EKE) in the upper troposphere. For each model, we
 calculated the EKE as \(EKE = 0.5(u'^2 + v'^2)\), where \(u'\) and
 \(v'\) are obtained using a Fast Fourier Transform high-pass filter
@@ -491,9 +493,7 @@ decreases poleward and equatorward. This pattern indicates that the
 areas of higher front frequency shift poleward in the future scenario.
 In the Indian ocean, the pattern in more complicated, with a second band
 of increased frequency in the subtropics most pronounced in the Agulas
-region. The oceanic regions in the Southern Hemisphere are also
-associated with an increase in \(\partial \bar{T}/ \partial y\) and in
-storm track activity (not shown).
+region.
 
 \begin{figure}
 
@@ -504,7 +504,7 @@ storm track activity (not shown).
 }
 
 \caption{\label{fig-trend}a) Multimodel mean change in the frequency of
-\(\Delta T_{2.5}\) (days/year, SSP5-8.5 2018-2100 minus Historical
+\(\Delta T_{2.5}\) (days/year, SSP5-8.5 2080-2100 minus Historical
 1980-2000) and zonal mean change over sea b) and land c), each grey line
 represents a model listed in Table 1 and a black line represents the
 multimodel mean. In a) dotted areas show where at least 90\% of the
@@ -515,9 +515,9 @@ models agree in the sign of change.}
 Figure~\ref{fig-serie} shows ensemble-mean time series of the zonal-mean
 frequency of strong temperature falls for different latitude bands in
 each hemisphere. Consistent with the map in Figure~\ref{fig-trend}, the
-trends in frequency are negative over ocean in the Northern hemisphere,
+trends in frequency are negative over ocean in the Northern Hemisphere,
 but positive over land equatorward of 50\(^{\circ}\) N. Over the
-Southern hemisphere, trends are generally positive over land, with
+Southern Hemisphere, trends are generally positive over land, with
 changes over ocean generally consistent with a poleward shift of fronts.
 
 While there is considerable variation between models in these trends
@@ -533,7 +533,7 @@ consistency in the sign of the trend across models.
 
 }
 
-\caption{\label{fig-serie}Multimodel mean frequency of
+\caption{\label{fig-serie}Multimodel yearly mean frequency of
 \(\Delta T_{2.5}\) for the historical period (1900-2014) and SSP5-8.5
 (2015-2100) over land and sea for different 2° wide latitude bands
 centered at 30, 40 and 50°. The grey line represents the climatological
@@ -542,29 +542,39 @@ right of each panel box plots of the intermodel distribution is shown
 for the period 2080-2100. In the boxplots the lower and upper hinges
 correspond to the first and third quartiles and the upper (lower)
 whisker extends to the largest (smallest) value no further than 1.5 *
-inter-quartile range. Outside the whiskers dots represents outliners.}
+inter-quartile range. Outside the whiskers dots represents outliers.}
 
 \end{figure}%
 
 To explore the distribution of the change in temperature falls of
 different intensity, Figure~\ref{fig-distribution} shows the change in
-frequency of \(\Delta T\) using different percentiles, from 10\(^{th}\)
-to 0.1\(^{th}\), as thresholds to identify the falls in temperature. The
-percentile values are again calculated from the historical period
-between 1979 and 2014 for each grid point and model as in
-Figure~\ref{fig-trend}. This figure shows that the change in the
-frequency of \(\Delta T\) is greater at lower percentile thresholds,
-which identify more extreme temperature falls. For example in the
-Northern Hemisphere over the sea, the 0.1 percentile threshold shows
-that there will be less than half as many falls in temperature in the
-future over 50\(^{\circ}\) N, with the opposite expected over land in
-the Southern Hemisphere. However, it is important to note that lower
-percentiles thresholds are associated with rarer events, meaning fewer
-occurrences per year. These results suggest that regions projected to
-experience more temperature falls in the future, such as land areas in
-midlatitudes in the Southern Hemisphere, will also experience more
-intense \(\Delta T\), whereas regions with a decreasing frequency of
-events will see less intense falls in temperature.
+the frequency of \(\Delta T\) using different percentiles, from
+10\(^{th}\) to 0.1\(^{th}\), as thresholds to identify the falls in
+temperature. The percentile values are again calculated from the
+historical period between 1979 and 2014 for each grid point and model as
+in Figure~\ref{fig-trend}.
+
+This figure shows that, in most cases, the sign of the change is the
+same across all percentile thresholds, meaning that there is a projected
+increase or decrease in the frequency of \(\Delta T\) regardless of the
+intensity of the temperature drop. The exceptions are the Southern
+Hemisphere over sea and the Northern Hemisphere over Land in the 40
+\(^{\circ}\) latitude band, were its expected to see a modest increase
+in strong temperature drops but a small decrease in weaker ones.
+
+It is also interesting to note that the change in the frequency of
+\(\Delta T\) is greater at lower percentile thresholds, which identify
+more extreme temperature drops. For example in the Northern Hemisphere
+over the sea, the 0.1\(^{th}\) percentile threshold shows that there
+will be less than half as many falls in temperature in the future over
+50\(^{\circ}\) N, with the opposite expected over land in the Southern
+Hemisphere. However, it is important to note that lower percentiles
+thresholds are associated with rarer events, meaning fewer occurrences
+per year. These results suggest that regions projected to experience
+more temperature falls in the future, such as land areas in midlatitudes
+in the Southern Hemisphere, will also experience more intense
+\(\Delta T\), whereas regions with a decreasing frequency of events will
+see less intense falls in temperature.
 
 \begin{figure}
 
@@ -575,7 +585,7 @@ events will see less intense falls in temperature.
 }
 
 \caption{\label{fig-distribution}Fractional change in the frequency of
-strong \(\Delta T\) averaged between the years 2081-2100 under the
+strong \(\Delta T\) averaged between the years 2080-2100 under the
 SSP5-8.5 scenario compared to that averaged between 1980-2000 in the
 historical scenario, for different thresholds defined by their
 percentile value for each grid point and model calculated over the
@@ -583,7 +593,7 @@ historical period (1979-2014).}
 
 \end{figure}%
 
-\subsection{Mecanisms}\label{mecanisms}
+\subsection{Mechanisms}\label{mechanisms}
 
 We now investigate the mechanisms driving the changes in
 \(\Delta T_{2.5}\) frequency described above. We consider a simple
@@ -611,11 +621,13 @@ temperature gradients in the Southern Hemisphere drive increases is
 front frequency there. Here, we find that this relationship holds within
 the model ensemble; larger increases or decreases in
 \(\partial \bar{T} / \partial y\) in a given model are associated with
-larger projected increases or decreases in \(\Delta T\). A similar
-relationship across the ensemble is present when comparing changes in
-the frequency of \(\Delta T_{2.5}\) and changes in the energy of the
-storm track. Here we estimate the storm track energy by taking the
-band-pass filtered eddy kinetic energy at 250 hPa (see
+larger projected increases or decreases in \(\Delta T\) and this
+relationship is particularly strong in the Northern Hemisphere.
+
+A similar relationship across the ensemble is present when comparing
+changes in the frequency of \(\Delta T_{2.5}\) and changes in the energy
+of the storm track. Here we estimate the storm track energy by taking
+the high-pass filtered eddy kinetic energy at 250 hPa (see
 Section~\ref{sec-storm-track}) and integrating over the 25\(^{\circ}\)
 and 65\(^{\circ}\) latitudes in each hemisphere. Models with projected
 decreases in EKE tend to project larger decreases in the frequency of
@@ -625,7 +637,7 @@ frequency of \(\Delta T_{2.5}\). The reason for this difference is
 unclear, but could suggest the importance of local land processes in
 amplifying fronts over land in some regions of the Southern Hemisphere
 (Muir \& Reeder, 2010). Another hypothesis is that the most of the land
-affected by fronts in the Southern hemisphere is north of the mean storm
+affected by fronts in the Southern Hemisphere is north of the mean storm
 tracks, and thus the storm tracks has only a weak effect on temperature
 variability there. Supporting this, Harvey et al. (2014) found that the
 storm track response in the Southern Hemisphere during summer is
@@ -640,9 +652,9 @@ climate. Indeed, differences in how these quantities change in
 projections appear to account for the differences in front frequency
 changes between hemispheres. However, our results do not provide strong
 evidence for the relative importance of the two factors: aside from over
-Southern Hemisphere land, both factors correlate with the
-\(\Delta T_{2.5}\) frequency across the model ensemble and both are
-theoretically associated with changes in temperature variability.
+Southern Hemisphere, both factors correlate with the \(\Delta T_{2.5}\)
+frequency across the model ensemble and both are theoretically
+associated with changes in temperature variability.
 
 \begin{figure}
 
@@ -657,8 +669,8 @@ frequency and a) mean merdional temperature gradient
 \(\partial \bar{T} / \partial y\) and b) the eddy kinetic energy of the
 storm track EKE for SSP5-8.5 (2080-2100) compared with the historical
 period (1980-2000) for each model. Values are calculated for the
-northern (25\(^{\circ}\) to 65\(^{\circ}\)) and southern
-(-25\(^{\circ}\) to -65\(^{\circ}\)) hemispheres and over sea (circles)
+Northern (25\(^{\circ}\) to 65\(^{\circ}\)) and Southern
+(-25\(^{\circ}\) to -65\(^{\circ}\)) Hemispheres and over sea (circles)
 and land (triangles). Each solid line corresponds to a linear regression
 for each hemisphere.}
 
@@ -697,9 +709,9 @@ thermodynamic structure affect how the storm track behaves (O'Gorman,
 2010). An important exception to the above correlations is that, in
 Southern Hemisphere land regions, front frequency increases despite a
 decrease in the EKE of the storm track. This may reflect the fact that
-storm track dynamics have less direct control over frontal systems,
-which could be more influenced by mesoscale processes, land--sea
-contrast, and regional thermodynamic effects.
+storm track dynamics have less direct control over frontal systems in
+this region, which could be more influenced by mesoscale processes,
+land--sea contrast, and regional thermodynamic effects.
 
 There are other factors not analyzed here that could contribute to the
 projected changes in frontal activity. For example, sea surface
