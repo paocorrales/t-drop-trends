@@ -1,13 +1,11 @@
-%% change
-
-\def\currversion{October 22, 2024}
+\def\currversion{April 16, 2019}
 
   %****************************************************************%
   %*                                                              *%
   %*  AGU Class File for all AGU Journals                         *%
   %*                                                              *%
   %*  Written by Amy Hendrickson                                  *%
-  %*  TeXnology Inc.: 617 738-8029                                *%ƒ
+  %*  TeXnology Inc.: 617 738-8029                                *%
   %*  amyh@texnology.com                                          *%
   %*  http://www.texnology.com                                    *%
   %*                                                              *%
@@ -38,784 +36,8 @@
 %%% Gave user more control over trackchanges options
 %%% fixed typo in example citations
 
-%%%  2024-10-21 / DC
-%%%
-%%%    Added ``published'' option and rough typsetting of Wiley published output
-%%%
-
-%%% 2024-11-21 / DC
-%%% Added more left-hand column items to published version.
-
-
-\ProvidesClass{agujournal2025}
-              %[01/14/2019]
-       [11/12/2024]
-
-
- % If the user calls with ``published'' then use the Wiley as-published class. DC
-\newif\ifpub
-%
-\DeclareOption{published}{\global\pubtrue}
-\ProcessOptions
-
-
-% If want published Wiley style.
-\ifpub
-\typeout{IF published^^J}
-
-
-%% Below two lines have to be in the top 10 lines of the file.  Leaving here for documentation.
-%!TEX TS-program = xelatex
-%!TEX encoding = UTF-8 Unicode
-
-
-%%xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-%% Set in Wiley style.
-
-%% Below two lines have to be in the top 10 lines of the file.  Leaving here for documentation.
-%!TEX TS-program = xelatex
-%!TEX encoding = UTF-8 Unicode
-%
- % OR anywhere near the top. . .
- %
-%\RequireXeTeX %Force XeTeX check
-
-\LoadClass[oneside]{article}
-%
-\RequirePackage{xstring}
-\RequirePackage{graphicx}
-\RequirePackage[strict]{changepage}
-\RequirePackage{etoolbox}
-\RequirePackage{textcomp} % for copyright sign
-\RequirePackage{lastpage}
-\RequirePackage{fancyhdr}
-%\RequirePackage{tweaklist}  % Has a bug in it.  Fixed below.
-\RequirePackage{tweaklist-git-moderncv-fixed}
-\RequirePackage{fancyvrb}  % So can use \begin{Verbatim}. . .\end{Verbatim} if want.
-\RequirePackage[x11names]{xcolor}
-\RequirePackage{ifthen}
-\RequirePackage{xifthen}
-\RequirePackage{listofitems}
-\RequirePackage{expl3}
-\RequirePackage{trimspaces}
-\RequirePackage{placeins}
-\RequirePackage{calc}
-\RequirePackage{enumitem}
-%\RequirePackage{spacing}
-
-%%%
-\parindent=0pt
-\parskip=.5pc
-
-
-%% Set journal name:
-\def\journalname#1{\def\thejournalname{#1}}
-\journalname{Please set Journal Name by using {\tt\string\journalname}}
-
-
-
-%  Bibliography section
-%
-% Need BibLaTeX for APA style.  DC
-%    NRV removed the above.
-%
-%
-% Add a margin par to the bibliography's section command.
-%
-\newcommand{\bibpagemarginpar}{%
-    \reversemarginpar\marginpar{%
-        \marginminipage{12pt}{% Geometry. Do not change.
-           \raggedright
-           \vspace*{12pt}
-           \firstpagemarginentry{Acknowledgements}{%\textcolor{red}
-            {Your acknowledgements will appear here.}}           % Need a hook-in?
-          \vfill
-      }
-   }
-}
-
-
-
-\RequirePackage{apacite}
-%\RequirePackage{natbib}
-\let\cite\shortcite % So get et al. with three authors the first time.
-%\let\citep\cite %xx A natbib command.
-\let\citet\shortciteA %xx Ditto.
-%
-\bibliographystyle{apacite}
-
-%
-% Change bib type size.
-\renewcommand\bibliographytypesize{\footnotesize}
-
-\renewcommand{\bibliographyprenote}{\bibpagemarginpar}
-
-% Indentation of the second and subsequent lines of a reference list entry, relative to the usual left margin.
-\setlength{\bibleftmargin}{10pt}
-
-% Indentation of the first line of a reference list entry, relative to the second line; default  -\bibleftmargin.
-\setlength{\bibindent}{-\bibleftmargin} % Just to make sure.
-
-% Vertical separation between two reference list entries.  Default value “0pt plus .3pt”
-\setlength{\bibitemsep}{-3pt}
-
-% Vertical separation between two paragraphs within the same reference list entry.
-\setlength{\bibparsep}{3pt}
-
-%\biblabelsep
-
-
-\RequirePackage{url}
-
-
-%% Table Footnotes
-
-\newdimen\saveparskip %xxxx
-\saveparskip=\parskip
-
-\newdimen\saveparindent
-\saveparindent=\parindent
-
-
-\def\tablenotemark#1{\rlap{$^{\rm #1}$}}   %xxxx
-\def\tablenotemark#1{}   % Undo above.
-
-\long\def\tablenotetext#1#2{\vtop{\vspace2pt   %xxxx
-\uncentering\noindent\setbox0=\hbox{#1}%
-\hskip\saveparindent\ifdim\wd0>1pt
-$^{\rm #1}$ \fi{\tablenotefont\ignorespaces #2}\vspace1sp}}
-%
-\def\tablenotetext#1#2{}  % Undo above.
-
-\long\def\tablecomments#1{\vbox{\uncentering  %xxxx
-\vspace2pt{\parindent\saveparindent\def\\ {\vspace1sp}\tablenotefont #1}
-\vspace 1sp}}
-
-\let\tablecomment\tablecomments  %xxxx  allowing these?
-\def\tablenotes{\uncentering\vspace4pt   %xxxx
-\tablenotefont\noindent\hskip\saveparindent\ignorespaces}
-\def\endtablenotes{\vspace1sp}
-
-\def\uncentering{%   %xxxx
-  \let\\\@normalcr
-  \rightskip0pt \leftskip0pt
-  \parindent\saveparskip \parfillskip0pt plus 1fil\relax}
-
-
-
-\def\articlenumber{\phantom{\small XX.XX/XX/XXXXEAXXXXXX}}  % Bogus sample number.  Made invisible by request.
-
-
-% Some definitions used in all styles.
-%
-\def\authorrunninghead#1{}
-\def\titlerunninghead#1{}%{\def\therunningheadtitle{#1}}  % Ignored in sample published version.
-
-
-%
-\def\title#1{\def\thetitle{#1}}
-\def\authors#1{\def\theauthors{#1} \makeinitialedfirstauthor}
-\def\authoraddr#1{\def\theauthoraddr{#1}}
-%
-%
-\newcounter{affiliationcounter} \setcounter{affiliationcounter}{0}
-%
-% Note: the default command \affil #1->$^{#1}$\ignorespaces
-\def\affiliation#1#2{%
-    \stepcounter{affiliationcounter} %\theaffiliationcounter (prints counter value)
-    \appto{% Add command to \authoraffiliations hook
-        \theauthoraffiliations}{$^{#1}$#2\ }
-}
-
-
-%
-%  Key Points
-\newcommand{\printnonemptyitem}[1]{%
-      \makeatletter
-      \sbox0{#1}%
-      \ifdim0pt=\dimexpr\wd0+\ht0+\dp0%=0pt % Check width + height + depth is zero; handles spaces.
-                                       \relax
-      \else
-%            \item #1
-          \apptocmd{\thekeypoints}{\item #1}
-      \fi
-      \makeatother
-} % end \printnonemptyitem
-%
-\newcommand{\thekeypoints}{%
-    \vspace*{-9pt}
-    \begin{itemize}
-}
-
-\def\keypoints#1#2#3{%
-        \printnonemptyitem{#1}
-        \printnonemptyitem{#2}
-        \printnonemptyitem{#3}
-    \apptocmd{\thekeypoints}{\end{itemize} }
-}
-\def\citation#1{\def\thecitation{#1}}
-
-
-\RequirePackage{marginnote}
-
-
-%  Fonts
-% https://tex.stackexchange.com/questions/43806/what-does-font-name-in-the-fontspec-package-refer-to-on-a-mac
-%\usepackage[T1]{fontenc}
-\usepackage{amsmath}
-\usepackage{fontspec}
-\defaultfontfeatures{Ligatures=TeX}
-\usepackage{xltxtra}
-\usepackage{xunicode}
-\usepackage{unicode-math}
-%
-%
-\setmathfont{STIX Two Math Regular}[
-%% Extension={.otf},
-%% Path=./,
-Scale=1]
-%
-\def\STIXTwo{%
-\setmainfont{STIX Two Text}[
-%% Extension={.otf},
-%% Path=./,
-UprightFont={* Regular},
-BoldFont={* Bold},
-ItalicFont={* Italic},
-BoldItalicFont={* Bold Italic}]
-}
-\STIXTwo
-
-
-\setsansfont[%% Path=./,
-  Mapping=tex-text, Scale=.9]{FreeSans}
-\setmonofont[%% Path=./, 
-  Mapping=tex-text, Scale=1.05]{FreeMono}
-
-%% Set the font sizes and baselines to match Wiley's journal.
-%
-% The font sizes
-%
-\makeatletter
-\renewcommand\normalsize{% 9/12     (main text; see also variations: author list 9/10.8, subsections down to paragraph 9/11)
-   \@setfontsize\normalsize{9}{12}%
-   \abovedisplayskip 8.5pt \@plus3pt \@minus4pt
-   \abovedisplayshortskip0pt \@plus2pt
-   \belowdisplayshortskip 4pt \@plus2pt \@minus2pt
-   \let\@listi\@listI
-}   %
-\normalbaselineskip=12pt
-\normalsize
-
-% Leading variation on normalsize
-\newcommand\authornormalsize{% 9/10.6   (author list)
-   \@setfontsize\authornormalsize{9}{10.8}%
-   \abovedisplayskip 8.5pt \@plus3pt \@minus4pt
-   \abovedisplayshortskip0pt \@plus2pt
-   \belowdisplayshortskip 4pt \@plus2pt \@minus2pt
-   \let\@listi\@listI
-}   %
-
-
-% small
-\renewcommand\small{% 8/10
-   \@setfontsize\small{8}{10}%%
-%   \abovedisplayskip 6pt \@plus2pt \@minus4pt
-%   \abovedisplayshortskip 0pt \@pluspt
-%   \belowdisplayshortskip 3pt \@pluspt \@minus2pt
-%   \def\@listi{\leftmargin\leftmargini
-%               \topsep 3pt \@pluspt \@minuspt
-%               \parsep 2pt \@pluspt \@minuspt
-%               \itemsep \parsep}%
-%   \belowdisplayskip \abovedisplayskip
-}
-
-% footnotesize
-\renewcommand\footnotesize{% 7/9
-   \@setfontsize\footnotesize{7}{9}%
-%   \abovedisplayskip 5pt \@plus2pt \@minus3pt
-%   \abovedisplayshortskip 0pt \@pluspt
-%   \belowdisplayshortskip 3pt \@pluspt \@minus2pt
-%   \def\@listi{\leftmargin\leftmargini
-%               \topsep 3pt \@pluspt \@minuspt
-%               \parsep 2pt \@pluspt \@minuspt
-%               \itemsep \parsep}%
-%   \belowdisplayskip \abovedisplayskip
-}
-
-% scriptsize
-\renewcommand\scriptsize{\@setfontsize\scriptsize{7}{8}} % 7/8
-%
-\newcommand\bibscriptsize{\@setfontsize\scriptsize{7}{9}} % 7/9    % scriptsize with different leading.    % But this is footnotesize
-% tiny
-\renewcommand\tiny{\@setfontsize\tiny{5}{6}}% 5/6
-% large
-\renewcommand\large{\@setfontsize\large{11}{12}} % 11/12    (section, back matter heads)
-% Large
-\renewcommand\Large{\@setfontsize\Large{12}{12}} % 12/12   (abstract heads)
-% LARGE
-\renewcommand\LARGE{\@setfontsize\LARGE{14}{16}} % 14/16
-% huge
-\renewcommand\huge{\@setfontsize\huge{15}{18}} % 15/18   (title)
-% Huge
-\renewcommand\Huge{\@setfontsize\Huge{22}{22}} % 22/22   (journal name)
-
-\makeatother
-
-
-% The fonts using the above sizes
-%
-\newcommand{\authornormalfont}{\normalfont\authornormalsize\bfseries}
-\newcommand{\titlefont}{\normalfont\huge\bfseries}
-\newcommand{\headerjournalfont}{\normalfont\LARGE\bfseries}
-\newcommand{\abstractheadfont}{\normalfont\Large\bfseries}
-\newcommand{\sectionfont}{\normalfont\large\bfseries}  % (subsections down to paragraph 9/11)
-\newcommand{\subsectionfont}{\normalfont\normalsize\bfseries}
-\newcommand{\authorfootnotesandtablesfont}{\normalfont\small\rmfamily}  % (author footnote, tables, table footnotes)
-\newcommand{\marginparreferencesfont}{\normalfont\footnotesize\rmfamily}
-\newcommand{\marginparreferencesheadsfont}{\normalfont\footnotesize\bfseries}  % (margin pars, references)
-\let\captionfont\marginparreferencesfont
-\let\captionlabelfont\marginparreferencesheadsfont
-\let\tablenotefont\captionfont
-%
-\newcommand{\journalfont}{\Huge\fontspec{texgyreadventor-bold.otf}}
-
-
-\gdef\fontblue{SlateBlue4}
-
-
-
-
-%% Set page layout geometry.
-% If change values, look for hard-wired instances of values (e.g., in \maketitle.)
-%
-\newlength{\topamount}  \setlength{\topamount}{40pt} %52pt}  %4pc, last measure says 62pt
-\newlength{\headsepamount}  \setlength{\headsepamount}{1pc} %1pc,
-\newlength{\headheightamount}  \setlength{\headheightamount}{27.65pt} %27.65pt,
-%
-\RequirePackage[%
-letterpaper,
-%asymmetric,
-%
-% Horizontal
-bindingoffset=0pt,
-left=14.5pc,   % 3pc space on left, 2pc on right, so margin text box should be 9.5pc.
-right=3pc,
-textwidth=32.25pc,  % 33.5pc,
-marginparsep=.5pc, % Larger number moves margin par text box to left.
-marginparwidth=11pc, % 11.5pc,
-%
-% Vertical
-%textheight=48pc,     % 50pc  Does not really change anything..
-includehead,
-includefoot,
-top=\topamount,  % see \maketitle
-headsep=\headsepamount,  % see \maketitle
-headheight=\headheightamount,  % see \maketitle
-footskip=2.5pc, % 2pc  % This shortens textheight from the bottom when increased.
-bottom=2pc,
-%
-%showframe,
-]{geometry}
-%
-
-% For lists.
-\setlength\leftmargini   {1pc}
-\setlength\leftmarginii  {1pc}
-\setlength\leftmarginiii {1pc}
-\setlength\leftmarginiv  {1pc}
-\setlength\leftmarginv   {1pc}
-\setlength\leftmarginvi  {1pc}
-\setlength\labelsep      {.5pc}
-\setlength\labelwidth    {\leftmargini}
-\addtolength\labelwidth{-\labelsep}
-
-
-
-% Margin pars
-%
-% Separation marginpars by 2 lines' worth of space.
-\setlength\marginparpush{2\baselineskip}%{10pt}
-
-% A minipage for margin pars, with adjustable vertical size.
-%
-% #1: minipage height
-% #2: minipage contents
-\newcommand{\marginminipage}[2]{%
-    \vspace*{-20pt}
-    %\fbox{%
-    %%%%
-    \begin{minipage}[t][#1][t]{9.5pc}%  % [vertical, size]{}{horizontal size}
-        #2%
-    \end{minipage}
-   % }% end fbox
-}
-
-
-
-% Sections
-%
-%
-% spec fonts, etc.
-% Note: \dimen0=\fontdimen5\sectionfont  % x height
-
-\makeatletter
-
-\renewcommand\section{\@startsection {section}{1}{\z@}%
-%                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
-%                                   {.1ex \@plus.2ex}%
-                                   {-26pt \@plus -1ex \@minus -.2ex}% Per specs.
-                                   {1pt \@plus.2ex}%
-                                   {\sectionfont\color{\fontblue}}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-%                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
-%                                     {.1ex \@plus .2ex}%
-                                     {-26pt \@plus -1ex \@minus -.2ex}% Per specs.
-                                     {1pt \@plus.2ex}%
-                                     {\subsectionfont \color{\fontblue}}}
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-%                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
-%                                    {.1ex \@plus .2ex}%
-                                   {-26pt \@plus -1ex \@minus -.2ex}% Per specs.
-                                   {1pt \@plus.2ex}%
-                                   {\subsectionfont \color{\fontblue}}}
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-                                    {3pt plus 1pt minus 1pt}%
-                                    {-1em}%
-                                    {\subsectionfont \color{\fontblue}}}
-%\newcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-%                                       {3.25ex \@plus1ex \@minus .2ex}%
-%                                       {-1em}%
-%                                      {\authornormalsize}}
-\makeatother
-
-
-% Put a period after all section labels, e.g., ``1.2.'' instead of ``1.2''
-\makeatletter
-\renewcommand\@seccntformat[1]{\csname the#1\endcsname.\ }
-\makeatother
-
-
-
-% Build a version of the first author with leading initials instead of names.  NOT WORKING.
-%
-\newcommand{\makeinitialedfirstauthor}{}%
-\newcommand{\firstauthorinitialedname}{}
-
-
-% Headers and Footers
-%
-\usepackage{xpatch}
-
-\pagestyle{fancy}
-%
-\xpretocmd\headrule{\color{\fontblue}}{}{\PatchFailed}
-\xpretocmd\footrule{\color{\fontblue}}{}{\PatchFailed}
-%
-% Was: \show\footruleskip => .3 \normalbaselineskip => .3 12 * p   3.6pt
-\renewcommand{\footruleskip}{12pt}
-%
-%
-\fancyhf{} % clear all header and footer fields
-\renewcommand{\headrulewidth}{1pt}
-\renewcommand{\footrulewidth}{1pt}
-%
-% Make headers and footers go across the whole page.
-% ignore compaints about the `e'.
-\fancyheadoffset[loh,reh]{11.5pc}
-\fancyfootoffset[loh,reh]{11.5pc}
-
-%
-% headers
-\def\raiseamount{.5pc}  % Raises if positive.
-%
-\fancyhead[L]{\includegraphics[height=2pc]{./agu-logo-small.pdf}}  % In the right place.  Adjust the other two by \raiseamount.
-\fancyhead[C]{
-     \raisebox{\raiseamount}{
-         \headerjournalfont
-        \textcolor{\fontblue}{
-             \thejournalname
-          }
-      }
-}
-\fancyhead[R]{\raisebox{\raiseamount}{\normalfont \textcolor{\fontblue}{\articlenumber}}}
-
-
-%
-% footers
-\def\allfooters{%
-    \normalfont
-    \fancyfoot[L]{\textcolor{\fontblue}{\firstauthorinitialedname}}%allcaps}}
-    \fancyfoot[R]{\textcolor{\fontblue}{\thepage\ of \pageref{LastPage}}}
-}
-\allfooters
-
-
-
-% Abstract and Plain Language Summary    % Original abstract environment written from scratch in TeX.
-%
-\def\abstracthead#1{{\abstractheadfont \textcolor{\fontblue}{#1\ }}}
-\def\abstractrule{{\color{\fontblue}\rule{\textwidth}{3pt}}}
-
-\newenvironment{plainlanguagesummary}
-    {
-        \par
-        \vspace*{6pt}
-        \abstracthead{Plain Language Summary}
-        \begingroup
-        \raggedright
-    }
-    {
-        \par
-        \endgroup
-    }
-
-\renewenvironment{abstract}
-    {
-       {\color{\fontblue} \abstractrule}
-        \par
-        \vspace*{-2pt}
-        \abstracthead{Abstract}
-        \begingroup
-         \raggedright
-    }
-    %  Put optional Abstract Body here, including the optional Plain Language Summary environment {plainlanguagesummary}.
-    {
-        \par
-        \endgroup
-        \vspace*{-6pt}
-        \abstractrule
-        \vspace*{-3pc}
-    }
-
-
-% Lists (not listings)
-%
-\newlength{\tweaktopskip}
-\setlength{\tweaktopskip}{1pc  - \parskip}
-
-
-% http://dcwww.camd.dtu.dk/~schiotz/comp/LatexTips/LatexTips.html
-%
-% Use tweaklist commands to change details of the itemize list.
-\renewcommand{\itemhook}{\setlength{\topsep}{\tweaktopskip}}%
-
- % Use tweaklist commands to change details of the description list.
-\renewcommand{\deschook}{\setlength{\topsep}{\tweaktopskip}}%
-
-% Use tweaklist commands to change details of the enumerate list.
-\renewcommand{\enumhook}{\setlength{\topsep}{\tweaktopskip}}%
-
-
-
-
- % Wide figures and tables simply go off the page.
-
-
-% Full-page-width area
-%
-\def\fullwidthmarginoverhang{-11.5pc}
-\def\absfullwidthmarginoverhang{11.5pc}
-%
-\newlength{\pagewidth}    \setlength{\pagewidth}{\textwidth}    \addtolength{\pagewidth}{\absfullwidthmarginoverhang}
-%
-\newenvironment{fullwidth}
-    {
-        % Widen left margin by width of margin text box plus marginpar.
-        \begin{adjustwidth}{\fullwidthmarginoverhang}{}
-        \let\oldtextwidth\textwidth
-        \let\textwidth\pagewidth
-    }
-    {
-        \let\textwidth\oldtextwidth
-        \end{adjustwidth}
-    }
-
-
-%%%
-%% Title block
-%
-% Some more author stuff (defined differently in non-Wiley) for title block.
-% Replace \affil stuff with below, from agujournal.cls:    DC
-%
-\def\affil#1{$^{#1}$\ignorespaces}
-\def\thanks#1{%xxx \textcolor{red}{
-(#1)}%}   % Should be moved to affil.
-%
-
-\newcommand{\footnoteuseerror}{ERROR: AGU does not permit footnotes outside of the author affiliations.}
-\renewcommand{\footnote}[1]{%
-%%\ClassError {⟨class-name⟩} {⟨error-text⟩} {⟨help-text⟩}
-    \typeout{^^J^^J \footnoteuseerror^^J^^J}
-    \footnoteuseerror
-}
-
-\def\marginparentrysep{1pc}
-%
-\newcommand{\firstpagemarginentry}[2]{%
-  \marginparreferencesheadsfont \textcolor{\fontblue}{#1:}\\
-  \marginparreferencesfont #2 \leavevmode \\  % ``\ '' before \leavevmode would do just as well.
-  \vspace*{\marginparentrysep}
-}
-%
-\renewcommand{\maketitle}{%
-      \newpage
-      %
-      % Suppress running head, not footers.
-      \fancypagestyle{plain}{%
-          \renewcommand{\headrulewidth}{0pt}%
-          \fancyhf{}%
-          \allfooters
-      }%
-      \thispagestyle{plain}
-      %
-
-      % Left margin par hangs off paper title.
-      %
-      \newcommand{\firstpagemarginpar}{%
-            \reversemarginpar\marginpar{%
-                 \marginminipage{44.75pc}{%
-                       \raggedright
-                       %
-                       \vspace*{-14pt} % Adjust so top of next line is at the top of the title.
-                       \sectionfont \textcolor{\fontblue}{RESEARCH ARTICLE}\par
-                       \vspace*{2pt}
-                       \normalfont \articlenumber\par
-                       \vspace*{\marginparentrysep}
-                      %
-                       \firstpagemarginentry{Key Points}{\thekeypoints}   % Hook in?
-                      \vspace*{-6pt}                       \firstpagemarginentry{Correspondence to}{\theauthoraddr}
-                       \firstpagemarginentry{Citation}{Your citation here.}   % Wiley does this.
-
-% Per AGU request, removed everything commented out except \vfill.
-                         % Received: XX XXX, XXXX\\
-                         % Accepted: XX XXX, XXXX\\
-                         % \vspace*{\marginparentrysep}
-
-%                       \firstpagemarginentry{Author Contributions}{%
-%                           \textcolor{red}{List of %hook in?
-%                           author(s) in bold followed by a colon; contribution in regular font.\\
-%                           No extra space between entries. One author per line.}
-%                       }
-                       \vfill
-%                       \marginparreferencesfont
-%                           \begingroup
-%                           \color{\fontblue} \textcopyright\ XXXX The Authors. Earth and Space Science published by Wiley Periodicals LLC on behalf of American Geophysical Union.
-%
-%                                This is an open access article under the terms of the Creative Commons Attribution-NonCommercial-NoDerivs License, which permits use and   distribution in any medium, provided the original work is properly cited, the use is non-commercial and no modifications or adaptations are made.
-%                          \endgroup
-              }   % end marginminipage
-          } % end reversemarginpar/marginpar
-      } % end firstmarginpar
-
-
-
-       \newlength{\firstpagelogoheight}   \setlength{\firstpagelogoheight}{2pc}
-       \gdef\typesetfirstpagelogo{\rightline{\includegraphics[height=\firstpagelogoheight]{./agu-logo-large.pdf}}}
-
-      \gdef\typesetjournal{\begin{fullwidth}  \journalfont% \textcolor{\fontblue}
-            {\thejournalname} \end{fullwidth}}
-
-      \newsavebox\titlebox
-      \savebox\titlebox{%
-               \parbox[t]{0.9\textwidth}{%
-                  \begingroup
-                        \raggedright
-                        \hyphenpenalty 10000\exhyphenpenalty 10000 \raggedright \sloppy  \titlefont  {\textcolor{\fontblue}{\thetitle}}
-                  \endgroup
-              } %\parbox
-      }
-
-      \gdef\typesettitle{%
-           \vspace*{4pt}
-           %
-           \vspace*{3.5pc}
-           \firstpagemarginpar
-           \vspace*{-3.5pc}
-           %
-           \usebox\titlebox
-            \par
-            \vspace*{6pt}
-     }
-
-      \gdef\typesetauthors{\authornormalfont\theauthors\par}
-      %
-      \gdef\typesetauthoraffiliations{\authorfootnotesandtablesfont\theauthoraffiliations}
-
-
-
-      % Do the top of the first page.
-       \begingroup
-             \raggedright
-
-            % Go to the paper top of the first page.
-             \vspace*{-\headsepamount}  % back up geometry's headsep amount
-             \vspace*{-\headheightamount}  % back up geometry's headheight amount
-             \vspace*{-\topamount}  % back up geometry's top amount
-             %
-             \newlength{\firstpagetopamount}  \setlength{\firstpagetopamount}{24pt}
-             \vspace*{\firstpagetopamount}
-             %
-           \typesetfirstpagelogo
-           \vspace*{4pt}
-           \typesetjournal
-           \vspace*{2pt}
-           \typesettitle  % Aso calls left margin par.
-           \vspace*{-2pt}
-           \typesetauthors
-           \typesetauthoraffiliations
-           \vspace*{-5pt}
-       \endgroup
-}% end \maketitle
-
-
-
-%%   See Tufte code.  NOT WORKING
-% \input{full-width-float} % Bring in code.
-
-% Floats   % NOT WORKING
-%
-%\newenvironment{fullwidthfloat}
-%    {
-%        \begin{fullwidth}
-%           \hspace*{\fullwidthmarginoverhang}
-%           \begin{minipage}{\pagewidth}
-%    }
-%    %
-%    {
-%            \end{minipage}
-%        \end{fullwidth}
-%    }
-
-
-% Watermark.
-\RequirePackage[%
-angle=270,
-fontsize=14pt,
-text=This\ paper\ has\ not\ been\ peer-reviewed,
-hpos=0.98\paperwidth,
-vpos=0.33\paperheight,
-hanchor=r,
-vanchor=t,
-]{draftwatermark}
-
-
-
-%
-%  end Wiley
-\endinput
-
-%%xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
-
-\else  % Use old code.
-
-\typeout{ELSE not published^^J}
-
-%% From original AGU Class File by Amy Hendrickson
-%%
+\ProvidesClass{agujournal2019}
+              [01/14/2019]
 
 %% SEARCH BELOW FOR THE NUMBER TO FIND PARTICULAR MACRO GROUP
 
@@ -1305,8 +527,7 @@ vanchor=t,
 \let\@evenfoot\@oddfoot
 %% \thejournalname set with \journalname{} command; if not you will get a request to set
 %% the journal name with \journalname{}
-\def\@oddhead{\vbox to 0pt{\vss\centerline{\color{ltgray}\small manuscript
-submitted to {\it \thejournalname}}\vspace24pt}}
+\def\@oddhead{\vbox to 0pt{\vss\centerline{{ \thejournalname}}\vskip24pt}}
 \let\@evenhead\@oddhead
 }
 
@@ -1354,13 +575,13 @@ submitted to {\it \thejournalname}}\vspace24pt}}
 
 %% Article Title
 \def\title#1{\global\c@footnote=0\relax%
-{\centering \Large\bf #1 \vspace14pt}
+{\centering \Large\bf #1 \vskip14pt}
 \def\thetitle{#1}}
 
-\def\authors#1{{\centering \normalsize\bf #1\vspace12pt}}
+\def\authors#1{{\centering \normalsize\bf #1\vskip12pt}}
 \def\affil#1{$^{#1}$\ignorespaces}
-\def\affiliation#1#2{\vspace-.5\parskip\relax{\centering{\footnotesize
-$^{#1}$#2\relax}\vspace-\parskip}}
+\def\affiliation#1#2{\vskip-.5\parskip\relax{\centering{\footnotesize
+$^{#1}$#2\relax}\vskip-\parskip}}
 
 \def\correspondingauthor#1#2{{\let\@thefnmark\relax\@footnotetext{\noindent\vrule
 height 18pt width0pt\relax\hbox to-8pt{}{\small
@@ -1374,16 +595,14 @@ Corresponding author: #1,
                 \hss\@textsuperscript{\normalfont\@thefnmark}}##1}\footnote{#1}\
 		}}
 
-\def\keypoints{\vspace24pt\vspace1sp\subsection*{Key Points:}
-\vspace*{-\marginparentrysep}
-\begin{itemize}[itemsep=1pt]%[noitemsep]
-}
+\def\keypoints{\vskip24pt\vskip1sp\subsection*{Key Points:}
+\begin{itemize}}
 \def\endkeypoints{\end{itemize}}
 
-\def\abstract{\newpage\noindent{\bf Abstract}\vspace-\parskip
+\def\abstract{\newpage\noindent{\bf Abstract}\vskip-\parskip
 \global\c@footnote=0\relax%
 \noindent\ignorespaces}
-\def\endabstract{\vspace18pt}
+\def\endabstract{\vskip18pt}
 
 %% <== End Title page and Abstract
 
@@ -1561,12 +780,12 @@ Corresponding author: #1,
   %% then make it format in a paragraph, otherwise center it.
 
   %% Test to see if it a figure or table: \ifx\@captype\xfigure
-  %% If figure, \vspace\belowcaptionskip
+  %% If figure, \vskip\belowcaptionskip
 
 \long\def\@makecaption#1#2{%
 {\small
 \ifx\@captype\xfigure
-\vspace\abovecaptionskip\fi
+\vskip\abovecaptionskip\fi
 {\ifturnofflinenums\else\ifnumlines\internallinenumbers\fi\fi
  \sbox\@tempboxa{\bf#1.\quad \rm #2}%
   \ifdim \wd\@tempboxa >.9\hsize
@@ -1574,11 +793,11 @@ Corresponding author: #1,
   \else
 {\centering
  \bf #1.\rm\quad #2
-\vspace1sp}
+\vskip1sp}
   \fi}
 %%
 \ifx\@captype\xfigure\else
-  \vspace\belowcaptionskip\fi
+  \vskip\belowcaptionskip\fi
 }}
 
 
@@ -1627,12 +846,12 @@ Corresponding author: #1,
   %% \noalign is a command that allows the uses to put something
   %% between lines in a table.
 \let\savehline\hline
-\def\hline{\noalign{\vspace3pt}\savehline\noalign{\vspace3pt}}
+\def\hline{\noalign{\vskip3pt}\savehline\noalign{\vskip3pt}}
 
   %% Simple macro for table notes, that makes sure that there is
   %% a little space between the table and the notes, and that they
   %% print in footnotesize.
-\def\tablenotes{\vspace2pt\footnotesize}
+\def\tablenotes{\vskip2pt\footnotesize}
 \let\endtablenotes\relax
 
   %%% <<=== end Figure and Table Captions
@@ -1836,7 +1055,7 @@ sys-tem-at-i-cal-ly
 \section*{Glossary}
 \description
 \def\term##1{\item[##1]}}
-\def\endglossary{\enddescription\vspace12pt\egroup}
+\def\endglossary{\enddescription\vskip12pt\egroup}
 %%
 
 %% Acronyms
@@ -1844,17 +1063,17 @@ sys-tem-at-i-cal-ly
 \section*{Acronyms}
 \description
 \def\acro##1{\item[##1]}}
-\def\endacronyms{\enddescription\vspace12pt\egroup}
+\def\endacronyms{\enddescription\vskip12pt\egroup}
 
 %% Notation
 \def\notation{\bgroup
 \section*{Notation}
 \description
 \def\notation##1{\item[\boldmath ##1]}}
-\def\endnotation{\enddescription\vspace12pt\egroup}
+\def\endnotation{\enddescription\vskip12pt\egroup}
 
 %% Acknowledgments
-\def\acknowledgments{\vspace12pt\noindent{\bf
+\def\acknowledgments{\vskip12pt\noindent{\bf
 Acknowledgments\vrule depth 6pt
 width0pt\relax}\\*\noindent\ignorespaces}
 
@@ -2021,10 +1240,10 @@ width0pt\relax}\\*\noindent\ignorespaces}
 %
 %%%
 %\def\xexplain[#1]#2{\ifdraft\marginpar{\noindent{\color{red}\llap{\boldmath$\leftarrow$}\draftfalse\normalsize
-%\baselineskip=11pt\relax[#1] #2\vspace1sp}}\fi}
+%\baselineskip=11pt\relax[#1] #2\vskip1sp}}\fi}
 %
 %\def\yexplain#1{\ifdraft\marginpar{\noindent{\color{red}\llap{\boldmath$\leftarrow$}\draftfalse\normalsize
-%\baselineskip=11pt\relax#1\vspace1sp}}\fi}
+%\baselineskip=11pt\relax#1\vskip1sp}}\fi}
 %
 %
 %\newcount\listchangenum
@@ -2034,15 +1253,15 @@ width0pt\relax}\\*\noindent\ignorespaces}
 %\ifdraft
 %\ifnum\refchangenumber>0
 %\ifnumlines\nolinenumbers\fi
-%\vspace36pt
+%\vskip36pt
 %\vtop{\hrule
 %\noindent{\vrule height 9pt width0pt depth 6pt\large\bf List of Changes}
 %\hrule
-%\vspace18pt}
+%\vskip18pt}
 %\nobreak
 %{\parskip=4pt \parindent-18pt \leftskip=18pt
 %\loop
-%\vspace-1pt\relax
+%\vskip-1pt\relax
 %\global\advance\listchangenum by 1\relax
 %\expandafter\ifx\csname changenum\the\listchangenum\endcsname\relax
 %\else
@@ -2063,8 +1282,8 @@ width0pt\relax}\\*\noindent\ignorespaces}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 14) Supporting Information
 \def\supportinginfo#1{\newpage
-{\large\bf\noindent Supporting  Information for\vspace-6pt\noindent``#1''}
-\vspace12pt}
+{\large\bf\noindent Supporting  Information for\vskip-6pt\noindent``#1''}
+\vskip12pt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Start page numbering, formatting
@@ -2075,9 +1294,18 @@ width0pt\relax}\\*\noindent\ignorespaces}
 \ifdraft
 \RaggedRight
 \fi
-
-
 \endinput
 
 
-\fi  % End non-published style  DC
+
+
+
+
+
+
+
+
+
+
+
+

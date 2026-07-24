@@ -1,0 +1,295 @@
+---
+title: "Using rapid temperature falls to estimate future strong cold front frequency in CMIP6 climate projections"
+format:
+    agusi-pdf:
+        keep-tex: true
+#journal: "grl"
+author:
+  - name: Paola B Corrales
+    affiliations:
+      - name: Monash University
+        department: School of Earth, Atmosphere and Environment
+        region: Victoria
+        country: Australia
+      - name: Monash University
+        department: ARC Centre of Excellence for Climate Extremes
+        region: Victoria
+        country: Australia
+    corresponding: true
+    orcid: 0000-0003-1923-9129
+    email: paola.corrales@monash.edu
+  - name: Martin Singh
+    affiliations:
+      - name: Monash University
+        department: School of Earth, Atmosphere and Environment
+        region: Victoria
+        country: Australia
+      - name: Monash University
+        department: ARC Centre of Excellence for Climate Extremes
+        region: Victoria
+        country: Australia
+    orcid: 0000-0002-4584-0885
+    email: martin.singh@monash.edu
+  - name: Michael J. Reeder
+    affiliations:
+      - name: Monash University
+        department: School of Earth, Atmosphere and Environment
+        region: Victoria
+        country: Australia
+      - name: Monash University
+        department: ARC Centre of Excellence for Climate Extremes
+        region: Victoria
+        country: Australia
+    orcid: 000-0002-4583-5875
+    email: michael.reeder@monash.edu
+citation:
+  container-title: Geophysical Research Letters
+execute: 
+  cache: true
+  echo: false
+  message: false
+  warning: false
+crossref:
+  fig-prefix: Figure S
+---
+
+
+```{r}
+#| label: setup
+
+library(metR)
+library(ggplot2)
+library(data.table)
+library(here)
+library(cowplot)
+library(ggside)
+library(patchwork)
+
+global_map <- rnaturalearth::ne_coastline()
+models_in_gadi <- c("CMCC-ESM2", "EC-Earth3", "INM-CM4-8", "INM-CM5-0", 
+                    "MPI-ESM1-2-HR", "NorESM2-MM", "EC-Earth3-CC", "EC-Earth3-Veg",
+                    "EC-Earth3-Veg-LR", "GFDL-CM4")
+
+file_list <- c(Sys.glob(here("data/deltat/deltap97.5_*historical_*J*.nc")),
+               Sys.glob(here("data/eke/eke_*historical_*J*.nc")))
+
+delta <- purrr::map(file_list, function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), "{var}_{model}_{scenario}_{season}.nc")
+  
+  
+  if (meta[[1]][["var"]] == "eke") {
+    var <- "ua"
+  } else if (meta[[1]][["var"]] == "deltap97.5") {
+    var <- "tasmax"
+    meta[[1]][["var"]] <- "deltat"
+  } 
+  
+  file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/*_", meta[[1]][["model"]], "_ssp585_", meta[[1]][["season"]], ".nc"))) 
+  
+  ReadNetCDF(f, vars = c(hist = var)) |> 
+    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), out = "vector")[[1]])] |> 
+    _[, let(model = meta[[1]][["model"]],
+            var = meta[[1]][["var"]],
+            season = meta[[1]][["season"]],
+            change = ssp585 / hist,
+            diff = ssp585 - hist,
+            lat = round(lat, digits = 8),
+            plev = NULL)] |> 
+    _[]
+  
+}) |> rbindlist() |> 
+  _[, let(var = fifelse(var == "deltap97.5", "deltat", var))]
+
+ta <- purrr::map(Sys.glob(here("data/ta/*hist*J*.nc")), function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), patterns = c("{var}_{model}_historical_{season}.nc"))
+  
+  file_scenario <- Sys.glob(here(paste0("data/", meta[[1]][["var"]], "/", 
+                                        meta[[1]][["var"]], "_", meta[[1]][["model"]], "_ssp585_", meta[[1]][["season"]], ".nc")))
+  
+  var <- meta[[1]][["var"]]
+  
+  ReadNetCDF(f, vars = c(hist = var), subset = list(plev = 85000)) |> 
+    _[, let(ssp585 = ReadNetCDF(file_scenario, vars = c(ssp585 = var), 
+                                subset = list(plev = 85000),
+                                out = "vector")[[1]])] |> 
+    _[, let(model = meta[[1]][["model"]],
+            var = var,
+            season = meta[[1]][["season"]],
+            lat = round(lat, digits = 8),
+            hist = metR:::.derv(hist, lat)*(180/pi/6371000),
+            ssp585 = metR:::.derv(ssp585, lat)*(180/pi/6371000)), by = .(lon)] |> 
+    _[, let(change = ssp585 / hist,
+            diff = ssp585 - hist,
+            plev = NULL)]
+  
+}) |> rbindlist() 
+
+data <- rbindlist(list(delta, ta)) |> 
+  _[, let(land = MaskLand(lon, lat))] |>
+  _[, let(land = factor(land, labels = c("Sea", "Land")))]
+
+
+file_list <- c(Sys.glob(here("data/percentiles/*p97.5_1950-1979_*.nc")))
+
+percentiles <- purrr::map(file_list, function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), "{var}_{model}_{scenario}_{things}_1950-1979_{season}.nc")
+  
+  ReadNetCDF(f, vars = c(deltat = "tasmax")) |> 
+    _[, let(model = meta[[1]][["model"]],
+            season = meta[[1]][["season"]],
+            lat = round(lat, digits = 8))] |> 
+    _[]
+  
+}) |> rbindlist() 
+
+```
+
+```{r}
+#| label: fig-trend-seasonal
+#| fig-width: 8
+#| fig-height: 6
+#| fig.cap: "Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) for a) DJF and b) JJA and $\\Delta T$ values associated to the 2.5 percentile calcualted for c) DJF and d) JJA. In a-b) dotted areas show where at least 90% of the models agree in the sign of change."
+#| 
+topo <- rcdo::cdo_topo(grid = "r360x180") |> 
+  rcdo::cdo_execute(options = "-f nc") |> 
+  ReadNetCDF()
+
+sig <- data |> 
+  _[(model %in% models_in_gadi) & var == "deltat"] |>
+  dcast(lat + lon + model + season ~ var, value.var = "diff") |> 
+  _[, .(sig = sum(sign(deltat), na.rm = TRUE)), by = .(lon, lat)] 
+
+map_freq <- data |> 
+  _[(model %in% models_in_gadi) & is.finite(change)] |>
+  dcast(lat + lon + model + season ~ var, value.var = "diff") |> 
+  _[, .(mean_dt = mean(deltat, na.rm = TRUE)), by = .(lon, lat, season)] |> 
+  # _[]
+  ggplot(aes(ConvertLongitude(lon), lat)) +
+  geom_contour_fill(aes(z = mean_dt, fill = after_stat(level)),
+                    breaks = c(-Inf, seq(-8, 8, 0.5), Inf)) +
+  scale_fill_divergent_discretised(name = "days/year", mid = "#f7f7f7",
+                                   guide = guide_colorbar(barheight = 0.5),
+                                   labels = function(x) JumpBy(x, 2, fill = "")) +
+  geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
+  geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 9], alpha = 0.3, shape = 4, size = 0.1) +
+  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  coord_sf(expand = FALSE, xlim = c(-179, 180)) +
+  labs(x = NULL, y = NULL, fill = "days/year") +
+  facet_wrap(~season) +
+  tagger::tag_facets(tag_pool = c("a", "b")) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
+        legend.key.width = grid::unit(1, 'null'),
+        legend.margin = margin(0, 0, 0, 0, unit = "cm"),
+        plot.margin = unit(c(-0.5, 0 , -1, 0), units = "cm"),
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+
+map_perc <- percentiles |> 
+  _[, .(mean_delta = mean(deltat)), by = .(lon, lat, season)] |> 
+  ggplot(aes(ConvertLongitude(lon), lat)) +
+  geom_contour_fill(aes(z = -mean_delta, fill = after_stat(level)),
+                    breaks = c(seq(0, 16, 1), Inf)) +
+  scale_fill_viridis_d(name = latex2exp::TeX("$\\Delta T$ (K)"),
+                       guide = guide_colorsteps(barheight = 0.5),
+                       direction = -1) +
+  geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
+  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  coord_sf(expand = FALSE, xlim = c(-179, 180)) +
+  labs(x = NULL, y = NULL) +
+  facet_wrap(~season, labeller = labeller(season = c(DJF = "", JJA = ""))) +
+  tagger::tag_facets(tag_pool = c("c", "d")) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
+        legend.key.width = grid::unit(1, 'null'),
+        legend.margin = margin(0, 0, 0, 0, unit = "cm"), 
+        plot.margin = unit(c(-2, 0 , -1, 0), units = "cm"),
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+
+plot_grid(map_freq, map_perc, 
+          ncol = 1)
+```
+
+
+
+
+
+
+
+
+
+```{r}
+#| label: fig-eke-seasonal
+#| fig-width: 8
+#| fig-height: 7
+#| fig.cap: "Mean change in the mean $\\Delta T_{2.5}$ frequency and a-b) mean merdional temperature gradient $\\partial \\bar{T} / \\partial y$ and c-d) the eddy kinetic energy of the storm track EKE for SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for each model and season a,c) DJF and b,d) JJA. Values are calculated for the northern (25$^{\\circ}$ to 65$^{\\circ}$) and southern (-25$^{\\circ}$ to -65$^{\\circ}$) hemispheres and over sea (circles) and land (triangles). Each solid line corresponds to a linear regression for each hemisphere and land or sea."
+#| 
+change <- data |> 
+  _[(model %in% models_in_gadi)] |>
+  dcast(lat + lon + model + season + land ~ var, value.var = "diff") |> 
+  
+  _[, let(region = fcase(lat %between% c(25, 65), "NH",
+                         lat %between% c(-65, -25), "SH",
+                         default = NA))] |> 
+  _[, .(mean_eke = weighted.mean(eke, w = cos(lat*pi/180), na.rm = TRUE),
+        mean_dt_dy = weighted.mean(ta, w = cos(lat*pi/180), na.rm = TRUE),
+        mean_deltat = weighted.mean(deltat, w = cos(lat*pi/180), na.rm = TRUE)), by = .(region, land, model, season)] |> 
+  _[, let(mean_dt_dy = fifelse(region == "NH", -mean_dt_dy, mean_dt_dy))] |> 
+  na.omit()
+
+gradt <- change |> 
+  ggplot(aes(mean_dt_dy*1000, mean_deltat, group = interaction(region, land))) +
+  geom_point(aes(color = region, shape = land), size = 2) +
+  geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
+  scale_color_manual(values = c("cyan4", "orange")) +
+  labs(x = latex2exp::TeX("$\\partial \\bar{T} / \\partial y$ change (K/km)"), 
+       y = latex2exp::TeX("$\\Delta T_{2.5}$ frequency change (days/year)"),
+       color = NULL, shape = NULL) +
+  coord_cartesian(ylim = c(-1.5, 1.5)) +
+  facet_wrap(~season) +
+  tagger::tag_facets(tag_pool = c("a", "b")) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.background = element_rect(fill = "#fbfbfb", color = NA))
+
+r2_eke <- change |> 
+  _[, .(r2 = round(cor(mean_deltat, mean_eke)^ 2, digits = 2)), by = .(region, land, season)]
+
+eke <- r2_eke[change, on = .(region, land, season)] |> 
+  ggplot(aes(mean_eke, mean_deltat, group = interaction(region, land))) +
+  geom_point(aes(color = region, shape = land), size = 2) +
+  geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
+  # geomtextpath::geom_textsmooth(aes(label = r2, colour = region, group = interaction(region, land, season)),
+  #                               method = "lm",
+  #                               linewidth = 1,
+  #                               hjust = 1.5,
+  #                               vjust = 1.3,
+  #                               size = 3,
+  #                               gap = FALSE) +
+  scale_color_manual(values = c("cyan4", "orange")) +
+  labs(x = latex2exp::TeX("EKE change ($m^2 s^{-2}$)"), 
+       y = latex2exp::TeX("$\\Delta T_{2.5}$ frequency change (days/year)"),
+       color = NULL, shape = NULL) +
+  coord_cartesian(ylim = c(-1.5, 1.5)) +
+  facet_wrap(~season, labeller = labeller(season = c(DJF = "", JJA = ""))) +
+  tagger::tag_facets(tag_pool = c("c", "d")) +
+  theme_minimal() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.1, 0.15),
+        legend.direction = "horizontal",
+        legend.box.background = element_rect(fill = "#fbfbfb", color = "#fbfbfb"),
+        legend.margin = margin(-2, 2, 1, 2, unit = "mm"),
+        plot.margin = unit(c(-0.5, 0 , 0, 0), units = "cm"),
+        panel.background = element_rect(fill = "#fbfbfb", color = NA))
+
+plot_grid(gradt, eke, ncol = 1, 
+          rel_widths = c(1, 1))
+```
+
