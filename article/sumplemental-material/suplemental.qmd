@@ -154,7 +154,7 @@ percentiles <- purrr::map(file_list, function(f) {
 #| label: fig-trend-seasonal
 #| fig-width: 8
 #| fig-height: 6
-#| fig.cap: "Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/season, SSP5-8.5 2018-2100 minus Historical 1980-2000) for a) DJF and b) JJA and $\\Delta T$ values associated to the 2.5$^{th}$ percentile calcualted for c) DJF and d) JJA. In a-b) dotted areas show where at least 90% of the models agree in the sign of change."
+#| fig.cap: "Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/season, SSP5-8.5 2018-2100 minus Historical 1980-2000) for a) DJF and b) JJA and $\\Delta T$ values associated with the 2.5$^{th}$ percentile calcualted for c) DJF and d) JJA. In a-b) dotted areas show where at least 90% of the models agree in the sign of change."
 #| 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 

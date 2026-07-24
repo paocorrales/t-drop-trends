@@ -251,13 +251,13 @@ In the Southern Hemisphere over land, the change is generally positive with an i
 Changes in $\Delta T_{2.5}$ frequency over the Southern Hemisphere ocean regions are less robust across the ensemble, but the ensemble mean shows a tripolar pattern, with increases in a band centered around 40$^{\circ}$-50$^{\circ}$ S (depending on the longitude) and decreases poleward and equatorward. 
 This pattern indicates that the areas of higher front frequency shift poleward in the future scenario. In the Indian ocean, the pattern in more complicated, with a second band of increased frequency in the subtropics most pronounced in the Agulas region. 
 
-The analysis of the change in frequency of $\Delta T_{2.5}$ by season in DJF and JJA (Figure S1 a) show similar spatial patterns and the same sign of the change when compared with the change per year in @fig-trend a). The main exception is western Europe, where we see an increase in front frequency during winter but a decrease in summer.
+The analysis of the change in frequency of $\Delta T_{2.5}$ by season in DJF and JJA (Figure S1 a) shows similar spatial patterns and the same sign of the change when compared with the change per year in @fig-trend a). The main exception is western Europe, where we see an increase in front frequency during winter but a decrease in summer.
 
 ```{r}
 #| label: fig-trend
 #| fig-width: 8
 #| fig-height: 7
-#| fig.cap: "a) Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2080-2100 minus Historical 1980-2000) and zonal mean change over b) land and c) sea, each grey line represents a model listed in Table 1 and a black line represents the multimodel mean. In a) dotted areas show where at least 90% of the models agree in the sign of change. d) $\\Delta T$ values associated to the 2.5$^{th}$ percentile and zonal mean over e) land and f) sea."
+#| fig.cap: "a) Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2080-2100 minus Historical 1980-2000) and zonal mean change over b) land and c) sea, each grey line represents a model listed in Table 1 and a black line represents the multimodel mean. In a) dotted areas show where at least 90% of the models agree in the sign of change. d) $\\Delta T$ values associated with the 2.5$^{th}$ percentile and zonal mean over e) land and f) sea."
 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 
