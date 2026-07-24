@@ -154,7 +154,7 @@ percentiles <- purrr::map(file_list, function(f) {
 #| label: fig-trend-seasonal
 #| fig-width: 8
 #| fig-height: 6
-#| fig.cap: "Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2018-2100 minus Historical 1980-2000) for a) DJF and b) JJA and $\\Delta T$ values associated to the 2.5 percentile calcualted for c) DJF and d) JJA. In a-b) dotted areas show where at least 90% of the models agree in the sign of change."
+#| fig.cap: "Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/season, SSP5-8.5 2018-2100 minus Historical 1980-2000) for a) DJF and b) JJA and $\\Delta T$ values associated to the 2.5$^{th}$ percentile calcualted for c) DJF and d) JJA. In a-b) dotted areas show where at least 90% of the models agree in the sign of change."
 #| 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 
@@ -173,14 +173,14 @@ map_freq <- data |>
   ggplot(aes(ConvertLongitude(lon), lat)) +
   geom_contour_fill(aes(z = mean_dt, fill = after_stat(level)),
                     breaks = c(-Inf, seq(-8, 8, 0.5), Inf)) +
-  scale_fill_divergent_discretised(name = "days/year", mid = "#f7f7f7",
+  scale_fill_divergent_discretised(name = "days/season", mid = "#f7f7f7",
                                    guide = guide_colorbar(barheight = 0.5),
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
   geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 9], alpha = 0.3, shape = 4, size = 0.1) +
   scale_y_latitude(breaks = seq(-80, 80 , 20)) +
   coord_sf(expand = FALSE, xlim = c(-179, 180)) +
-  labs(x = NULL, y = NULL, fill = "days/year") +
+  labs(x = NULL, y = NULL, fill = "days/season") +
   facet_wrap(~season) +
   tagger::tag_facets(tag_pool = c("a", "b")) +
   theme_minimal(base_size = 12) +
@@ -250,7 +250,7 @@ gradt <- change |>
   geom_smooth(aes(colour = region), method = "lm", se = FALSE) +
   scale_color_manual(values = c("cyan4", "orange")) +
   labs(x = latex2exp::TeX("$\\partial \\bar{T} / \\partial y$ change (K/km)"), 
-       y = latex2exp::TeX("$\\Delta T_{2.5}$ frequency change (days/year)"),
+       y = latex2exp::TeX("$\\Delta T_{2.5}$ frequency change (days/season)"),
        color = NULL, shape = NULL) +
   coord_cartesian(ylim = c(-1.5, 1.5)) +
   facet_wrap(~season) +
@@ -275,7 +275,7 @@ eke <- r2_eke[change, on = .(region, land, season)] |>
   #                               gap = FALSE) +
   scale_color_manual(values = c("cyan4", "orange")) +
   labs(x = latex2exp::TeX("EKE change ($m^2 s^{-2}$)"), 
-       y = latex2exp::TeX("$\\Delta T_{2.5}$ frequency change (days/year)"),
+       y = latex2exp::TeX("$\\Delta T_{2.5}$ frequency change (days/season)"),
        color = NULL, shape = NULL) +
   coord_cartesian(ylim = c(-1.5, 1.5)) +
   facet_wrap(~season, labeller = labeller(season = c(DJF = "", JJA = ""))) +
