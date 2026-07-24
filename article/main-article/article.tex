@@ -199,17 +199,19 @@
 
 \journalname{Geophysical Research Letters}
 
-\draftfalse
-
 \begin{document}
 \title{Using rapid temperature falls to estimate future strong cold
 front frequency in CMIP6 climate projections}
 
-\authors{Paola B Corrales\affil{1,2}, Martin Singh\affil{1,2}, Michael
-J. Reeder\affil{1,2}}
+\authors{Paola B Corrales\affil{1,2,3,4}, Martin
+Singh\affil{1,2,4}, Michael J. Reeder\affil{1,2}}
 \affiliation{1}{School of Earth, Atmosphere and Environment, Monash
-University, Victoria, Australia}\affiliation{2}{ARC Centre of Excellence
-for Climate Extremes, Monash University, Victoria, Australia}
+University, Melbourne, Australia}\affiliation{2}{ARC Centre of
+Excellence for Climate
+Extremes, Melbourne, Australia}\affiliation{3}{Research School of Earth
+Sciences, Australian National
+University, Canberra, Australia}\affiliation{4}{ARC Centre of Excellence
+for the Weather of the 21st Century, Melbourne, Australia}
 \correspondingauthor{Paola B Corrales}{paola.corrales@monash.edu}
 
 \begin{keypoints}
@@ -283,9 +285,9 @@ daily-maximum temperature. This method has been shown to be suitable for
 the detection of strong cold fronts in southeastern Australia (Cai et
 al., 2022; Reeder et al., 2015), and can successfully identify cold
 fronts in data with different resolutions, including both station data
-and reanalyses (King et al. (2024)). Indeed, King et al. (2024)
-developed a climatology of cold-front frequency in global climate models
-from phase 6 of the Coupled Model Intercomparison Project (CMIP6) which
+and reanalyses (King et al., 2024). Indeed, King et al. (2024) developed
+a climatology of cold-front frequency in global climate models from
+phase 6 of the Coupled Model Intercomparison Project (CMIP6) which
 produced results comparable to other, more complex, cold-front detection
 algorithms. While the models tend to overestimate front frequency in
 polar regions and underestimate the occurrence of large temperature
@@ -320,12 +322,12 @@ consider again projections of the CMIP6 ensemble, but we consider a
 simpler method of estimating changes in front frequency and intensity
 with cooling based on day-to-day falls in maximum surface air
 temperature. This approach offers several advantages. First, the
-method's simplicity and resolution-independence (as shown by
-\textbf{king2024?}) allows us to compare it with earlier studies using
-other methodologies. Second, focusing on local temperature falls
-provides a complementary perspective to Lagrangian approaches, as
-day-to-day temperature falls are the most direct impact of cold fronts
-on local weather.
+method's simplicity and weak resolution-dependence (as shown by King et
+al., 2024) allows us to compare it with earlier studies using other
+methodologies. Second, focusing on local temperature falls provides a
+complementary perspective to Lagrangian approaches, as day-to-day
+temperature falls are the most direct impact of cold fronts on local
+weather.
 
 Consistent with Catto et al. (2014), we find a decrease in cold front
 frequency in the Northern Hemisphere and a poleward shift in the
@@ -419,22 +421,26 @@ least 10 deg C lower than that of day \(i\). While this value is
 reasonable for detecting strong falls in temperature over land, it may
 underestimate the frequency of fronts over the ocean due to the smaller
 temperature variability. For this reason, in this study, we use the
-value of the 2.5th percentile of \(\Delta T\) (as we want to capture the
-most negative temperature falls) as a threshold for each grid point to
-identify falls in temperature, hereafter
+value of the 2.5\(^{th}\) percentile of \(\Delta T\) (as we want to
+capture the most negative temperature falls) as a threshold for each
+grid point to identify falls in temperature, hereafter
 \(\Delta T_{2.5} = \Delta T \le 2.5^{th}\) percentile. This percentile
-is chosen because the mean of the 2.5th percentile over all midlatitude
-land areas (between 25\(^{\circ}\) to 55\(^{\circ}\)) is close to
-\(-10^{\circ}C\), the threshold used by King et al. (2024). The
+is chosen because the mean of the 2.5\(^{th}\) percentile over all
+midlatitude land areas (between 25\(^{\circ}\) to 55\(^{\circ}\)) is
+close to \(-10^{\circ}C\), the threshold used by King et al. (2024). The
 percentiles are calculated over the historical period between 1979 and
-2014 for each model at each grid point. It is important to note that by
-using this threshold we detect frontal passages in exactly 2.5\% of
-days. In regions of regular frontal passage the 2.5th percentile of
-\(\Delta T\) generally corresponds to strong fronts, and our
-identification method produces reasonable results. However, outside
-these regions (e.g., in the tropics) we identify temperature drops that
-can be associated to midlatitude frontlike features but also other
-processes.
+2014 for each model at each grid point. Additionally, the percentile
+values are also calculated over the same period for
+December-January-February (DJF) and June-July-August (JJA) for the
+seasonal analysis (see Supplemental Information).
+
+It is important to note that by using this threshold we detect frontal
+passages in exactly 2.5\% of days. In regions of regular frontal passage
+the 2.5\(^{th}\) percentile of \(\Delta T\) generally corresponds to
+strong fronts, and our identification method produces reasonable
+results. However, outside these regions (e.g., in the tropics) we
+identify temperature drops that can be associated to midlatitude
+frontlike features but also other processes.
 
 \subsection{Time-mean Meridional Temperature
 Gradient}\label{time-mean-meridional-temperature-gradient}
@@ -466,16 +472,25 @@ frequency for last 20 years of the 21\(^{st}\) century (SSP5-8.5
 experiment) and the last 20 years of the 20\(^{th}\) century (historical
 experiment). Figure~\ref{fig-trend} b and c) show the zonal mean of
 \(\Delta T_{2.5}\) frequency for each latitude over sea and over land
-respectively. In the Northern Hemisphere over land, there is a robust
-decrease in \(\Delta T_{2.5}\), particularly north of 40\(^{\circ}\)
-latitude, except in western and central Europe where the multi-model
-mean shows an increase but the signal is not robust across the ensemble.
-A similar pattern of changes in front frequency was also found by Catto
-et al. (2014) using CMIP5 and a different methodology to identify
-fronts, reinforcing the reliability of the methodology used in this
-analysis. Over the oceans, front frequency also tends to decrease over
-the North Atlantic, which shows a multi-model mean increase in front
-frequency west of continental Europe. This local increase may be
+respectively.
+
+Figure~\ref{fig-trend} d) show the \(\Delta T\) values associated with
+the 2.5\(^{th}\) percentile. We found that the spatial pattern
+correlates with the climatology of cold fronts proposed by Berry et al.
+(2011) (their Figure 2a) or King et al. (2024) (their Figure 6). This
+shows that temperature drops from one day to the next identified using
+this percentile are directly related to cold front passages.
+
+In terms of projected changes, in the Northern Hemisphere over land,
+there is a robust decrease in \(\Delta T_{2.5}\), particularly north of
+40\(^{\circ}\) latitude, except in western and central Europe where the
+multi-model mean shows an increase but the signal is not robust across
+the ensemble. A similar pattern of changes in front frequency was also
+found by Catto et al. (2014) using CMIP5 and a different methodology to
+identify fronts, reinforcing the reliability of the methodology used in
+this analysis. Over the oceans, front frequency also tends to decrease
+over the North Atlantic, which shows a multi-model mean increase in
+front frequency west of continental Europe. This local increase may be
 interpreted as a shift of front frequency toward the pole in this
 sector, although it does not appear consistently across the ensemble.
 
@@ -495,6 +510,13 @@ In the Indian ocean, the pattern in more complicated, with a second band
 of increased frequency in the subtropics most pronounced in the Agulas
 region.
 
+The analysis of the change in frequency of \(\Delta T_{2.5}\) by season
+in DJF and JJA (Figure S1 a) show similar spatial patterns and the same
+sign of the change when compared with the change per year in
+Figure~\ref{fig-trend} a). The main exception is western Europe, where
+we see an increase in front frequency during winter but a decrease in
+summer.
+
 \begin{figure}
 
 \centering{
@@ -505,10 +527,11 @@ region.
 
 \caption{\label{fig-trend}a) Multimodel mean change in the frequency of
 \(\Delta T_{2.5}\) (days/year, SSP5-8.5 2080-2100 minus Historical
-1980-2000) and zonal mean change over sea b) and land c), each grey line
+1980-2000) and zonal mean change over b) land and c) sea, each grey line
 represents a model listed in Table 1 and a black line represents the
 multimodel mean. In a) dotted areas show where at least 90\% of the
-models agree in the sign of change.}
+models agree in the sign of change. d) \(\Delta T\) values associated to
+the 2.5\(^{th}\) percentile and zonal mean over e) land and f) sea.}
 
 \end{figure}%
 
@@ -645,7 +668,17 @@ associated with the change in the low level
 \(\partial \bar{T} / \partial y\) mainly poleward of 65\(^{\circ}\) S,
 i.e.~over the southern oceans.
 
-Notwithstanding the above caveat, our results suggest that changes in
+The results associated with changes in EKE by season align with previous
+literature (O'Gorman, 2010; Priestley \& Catto, 2022), with a general
+increase in EKE during summer and a decrease in winter in the Northern
+Hemisphere and a general positive change in the Southern Hemisphere in
+both seasons associated with a poleward shift of the storm tracks
+(Figure S2 c-d). Given these seasonal asymmetries, it is important to
+note that the change in EKE averaged over the entire year
+(Figure~\ref{fig-eke} b) is strongly associated with the winter season
+in each hemisphere.
+
+Notwithstanding the above caveats, our results suggest that changes in
 the mean meridional temperature gradient and storm track intensity play
 an important role in modulating changes in front frequency in a warming
 climate. Indeed, differences in how these quantities change in
@@ -731,6 +764,18 @@ frequency may also reflect modifications in the large-scale circulation,
 such as shifts in the background flow, changes in horizontal wind shear,
 or variations in baroclinicity. Further analysis is needed to quantify
 the contribution of these mechanisms to projected changes.
+
+Finally, this study focuses on cold fronts although warm fronts also
+play an important role in the distribution of extreme precipitation
+(Catto \& Pfahl, 2013). We explored extending the methodology to warm
+fronts by considering day-to-day increases in maximum temperature.
+However, unlike cold fronts, warm fronts are not associated with a
+sufficiently distinct temperature signal to allow a simple
+threshold-based identification without also including changes associated
+with other local thermodynamic processes. Developing a simple and robust
+method for identifying warm fronts would extend the present framework
+and provide further insight into projected changes in frontal activity
+under climate change.
 
 \section{Acknowledgments}\label{acknowledgments}
 
@@ -969,6 +1014,12 @@ Letters}, \emph{44}(7), 3246--3254.
 
 \bibitem[\citeproctext]{ref-patchwork}
 Pedersen, T. L. (2024). Patchwork: The composer of plots.
+
+\bibitem[\citeproctext]{ref-Priestley2022}
+Priestley, M. D. K., \& Catto, J. L. (2022). Future changes in the
+extratropical storm tracks and cyclone intensity, wind speed, and
+structure. \emph{Weather and Climate Dynamics}, \emph{3}(1), 337--360.
+\url{https://doi.org/10.5194/wcd-3-337-2022}
 
 \bibitem[\citeproctext]{ref-R}
 R Core Team. (2023). R: A language and environment for statistical

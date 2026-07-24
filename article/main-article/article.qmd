@@ -10,11 +10,18 @@ author:
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: Victoria
+        region: Melbourne
         country: Australia
-      - name: Monash University
-        department: ARC Centre of Excellence for Climate Extremes
-        region: Victoria
+      - name: ARC Centre of Excellence for Climate Extremes
+        # department: ARC Centre of Excellence for Climate Extremes
+        region: Melbourne
+        country: Australia
+      - name: Australian National University
+        department: Research School of Earth Sciences
+        region: Canberra
+        country: Australia
+      - name: ARC Centre of Excellence for the Weather of the 21st Century
+        region: Melbourne
         country: Australia
     corresponding: true
     orcid: 0000-0003-1923-9129
@@ -23,11 +30,13 @@ author:
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: Victoria
+        region: Melbourne
         country: Australia
-      - name: Monash University
-        department: ARC Centre of Excellence for Climate Extremes
-        region: Victoria
+      - name: ARC Centre of Excellence for Climate Extremes
+        region: Melbourne
+        country: Australia
+      - name: ARC Centre of Excellence for the Weather of the 21st Century
+        region: Melbourne
         country: Australia
     orcid: 0000-0002-4584-0885
     email: martin.singh@monash.edu
@@ -35,11 +44,10 @@ author:
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: Victoria
+        region: Melbourne
         country: Australia
-      - name: Monash University
-        department: ARC Centre of Excellence for Climate Extremes
-        region: Victoria
+      - name: ARC Centre of Excellence for Climate Extremes
+        region: Melbourne
         country: Australia
     orcid: 000-0002-4583-5875
     email: michael.reeder@monash.edu
@@ -140,6 +148,20 @@ data <- rbindlist(list(delta, ta)) |>
   _[, let(land = MaskLand(lon, lat))] |>
   _[, let(land = factor(land, labels = c("Sea", "Land")))]
 
+file_list <- c(Sys.glob(here("data/percentiles/*p97.5_1950-1979.nc")))
+
+percentiles <- purrr::map(file_list, function(f) {
+  
+  message(f)
+  meta <- unglue::unglue(basename(f), "{var}_{model}_{scenario}_{things}.nc")
+  
+  ReadNetCDF(f, vars = c(deltat = "tasmax")) |> 
+    _[, let(model = meta[[1]][["model"]],
+            lat = round(lat, digits = 8))] |> 
+    _[]
+  
+}) |> rbindlist() 
+
 ```
 
 
@@ -152,14 +174,14 @@ Several computational methods have been developed to identify cold fronts using 
 
 
 Here, we take a simpler approach, first introduced by @Reeder2015. We measure the occurrence of cold fronts using temporal changes in temperature at a fixed location. Specifically, we identify the passage of cold fronts with large day-to-day falls in near-surface daily-maximum temperature. 
-This method has been shown to be suitable for the detection of strong cold fronts in southeastern Australia [@Cai2022; @Reeder2015], and can successfully identify cold fronts in data with different resolutions, including both station data and reanalyses (@King2024). Indeed, @King2024 developed a climatology of cold-front frequency in global climate models from phase 6 of the Coupled Model Intercomparison Project (CMIP6) which produced results comparable to other, more complex, cold-front detection algorithms. While the models tend to overestimate front frequency in polar regions and underestimate the occurrence of large temperature falls over midlatitude land regions compared with ERA5, they accurately represent the patterns of front frequency equatorward of about 60°.
+This method has been shown to be suitable for the detection of strong cold fronts in southeastern Australia [@Cai2022; @Reeder2015], and can successfully identify cold fronts in data with different resolutions, including both station data and reanalyses [@King2024]. Indeed, @King2024 developed a climatology of cold-front frequency in global climate models from phase 6 of the Coupled Model Intercomparison Project (CMIP6) which produced results comparable to other, more complex, cold-front detection algorithms. While the models tend to overestimate front frequency in polar regions and underestimate the occurrence of large temperature falls over midlatitude land regions compared with ERA5, they accurately represent the patterns of front frequency equatorward of about 60°.
 
 As global temperatures continue to rise, understanding how this warming will affect the occurrence of cold fronts is crucial for projecting changes in extreme weather and fire risk. One of the few studies to address this question is @Catto2014, who identified fronts using an objective detection method based on temperature and humidity fields [@Berry2011]. In this framework, fronts are represented as line features, marking sharp gradients in thermodynamic variables. Using this approach in 18 CMIP5 models, they compared historical simulations (1980–2005) with projections under the Representative Concentration Pathway 8.5 scenario (2080–2100). They found an overall decrease in front frequency in the Northern Hemisphere, with a poleward shift in the latitude of maximum frequency and a significant decrease at high latitudes. The Southern Hemisphere also showed a poleward shift in the frequency maximum.
 
 In contrast, @Konstali2024 identified fronts in CESM2-LE simulations using the gradient of equivalent potential temperature at 850 hPa. In this approach, frontal systems are represented as areas of strong gradients rather than discrete lines. Using this methodology, they found an increase in the frequency of fronts, which they suggest may be associated with fronts becoming stronger or more elongated in both hemispheres.
 
 Motivated by the contrasting results of previous studies, here we consider again projections of the CMIP6 ensemble, but we consider a simpler method of estimating changes in front frequency and intensity with cooling based on day-to-day falls in maximum surface air temperature.
-This approach offers several advantages. First, the method's simplicity and resolution-independence [as shown by @king2024] allows us to compare it with earlier studies using other methodologies. Second, focusing on local temperature falls provides a complementary perspective to Lagrangian approaches, as day-to-day temperature falls are the most direct impact of cold fronts on local weather.
+This approach offers several advantages. First, the method's simplicity and weak resolution-dependence [as shown by @King2024] allows us to compare it with earlier studies using other methodologies. Second, focusing on local temperature falls provides a complementary perspective to Lagrangian approaches, as day-to-day temperature falls are the most direct impact of cold fronts on local weather.
 
 Consistent with @Catto2014, we find a decrease in cold front frequency in the Northern Hemisphere and a poleward shift in the Southern Hemisphere. Seeking to develop a physical explanation for these changes, we first study the response of the meridional temperature gradient and its relationship with the change in front frequency. We also explore the relationship between changes in front frequency and transient eddy kinetic energy, as it is directly related to the storm tracks. Several studies have shown a poleward shift on the storm tracks in future climate change scenarios, particularly in the Southern Hemisphere [@OGorman2010; @Tamarin2017; @Chemke2022], and these changes could also influence the location and intensity of future cold fronts.
 
@@ -199,13 +221,15 @@ readr::read_rds(here("data/cmip_file_list_scenario.rds")) |>
 
 ### Front Identification
 
-We identify falls in near-surface air temperature (2 meter) as a proxy for frontal passages by calculating the change in daily maximum temperature from one day to the next ($\Delta T$). $\Delta T$ is calculated for all grid points and days in the study period. @King2024 defined a passage of a strong cold front as a $\Delta T \le -10^{\circ}C$. That is, a cold front passage is identified on day $i$ if the maximum temperature on day $i+1$ is at least 10 deg C lower than that of day $i$. While this value is reasonable for detecting strong falls in temperature over land, it may underestimate the frequency of fronts over the ocean due to the smaller temperature variability. For this reason, in this study, we use the value of the 2.5th percentile of $\Delta T$ (as we want to capture the most negative temperature falls) as a threshold for each grid point to identify falls in temperature, hereafter $\Delta T_{2.5} = \Delta T \le 2.5^{th}$ percentile. This percentile is chosen because the mean of the 2.5th percentile over all midlatitude land areas (between 25$^{\circ}$ to 55$^{\circ}$) is close to $-10^{\circ}C$, the threshold used by @King2024. The percentiles are calculated over the historical period between 1979 and 2014 for each model at each grid point. It is important to note that by using this threshold we detect frontal passages in exactly 2.5% of days. In regions of regular frontal passage the 2.5th percentile of $\Delta T$ generally corresponds to strong fronts, and our identification method produces reasonable results. However, outside these regions (e.g., in the tropics) we identify temperature drops that can be associated to midlatitude frontlike features but also other processes. 
+We identify falls in near-surface air temperature (2 meter) as a proxy for frontal passages by calculating the change in daily maximum temperature from one day to the next ($\Delta T$). $\Delta T$ is calculated for all grid points and days in the study period. @King2024 defined a passage of a strong cold front as a $\Delta T \le -10^{\circ}C$. That is, a cold front passage is identified on day $i$ if the maximum temperature on day $i+1$ is at least 10 deg C lower than that of day $i$. While this value is reasonable for detecting strong falls in temperature over land, it may underestimate the frequency of fronts over the ocean due to the smaller temperature variability. For this reason, in this study, we use the value of the 2.5$^{th}$ percentile of $\Delta T$ (as we want to capture the most negative temperature falls) as a threshold for each grid point to identify falls in temperature, hereafter $\Delta T_{2.5} = \Delta T \le 2.5^{th}$ percentile. This percentile is chosen because the mean of the 2.5$^{th}$ percentile over all midlatitude land areas (between 25$^{\circ}$ to 55$^{\circ}$) is close to $-10^{\circ}C$, the threshold used by @King2024. The percentiles are calculated over the historical period between 1979 and 2014 for each model at each grid point. Additionally, the percentile values are also calculated over the same period for December-January-February (DJF) and June-July-August (JJA) for the seasonal analysis (see Supplemental Information). 
+
+It is important to note that by using this threshold we detect frontal passages in exactly 2.5% of days. In regions of regular frontal passage the 2.5$^{th}$ percentile of $\Delta T$ generally corresponds to strong fronts, and our identification method produces reasonable results. However, outside these regions (e.g., in the tropics) we identify temperature drops that can be associated to midlatitude frontlike features but also other processes. 
 
 
 
 ### Time-mean Meridional Temperature Gradient
 
-We calculated the time-mean meridional temperature gradient ($\partial \bar{T}/ \partial y$) at each grid point using central finite differences for the temperature at 850 hPa. We then area-averaged $\partial \bar{T}/ \partial y$ over different regions, e.g.,  between 25$^{\circ}$ and 65$^{\circ}$ latitude for each hemisphere. This process produces the same results as if calculating the temperature difference between two latitudes but has the advantage of allowing the calculation of $\partial \bar{T}/ \partial y$ for regions over land and sea independently.
+We calculated the time-mean meridional temperature gradient ($\partial \bar{T}/ \partial y$) at each grid point using central finite differences for the temperature at 850 hPa. We then area-averaged $\partial \bar{T}/ \partial y$ over different regions, e.g.,  between 25$^{\circ}$ and 65$^{\circ}$ latitude for each hemisphere. This process produces the same results as if calculating the temperature difference between two latitudes but has the advantage of allowing the calculation of $\partial \bar{T}/ \partial y$ for regions over land and sea independently. 
 
 ### Storm Tracks Estimation {#sec-storm-track}
 
@@ -216,19 +240,24 @@ To estimate the storm track location we follow previous work [@OGorman2010; @Che
 ## Results
 
 @fig-trend a) shows the change in the frequency of $\Delta T_{2.5}$ between the yearly averaged $\Delta T_{2.5}$ frequency for last 20 years of the 21$^{st}$ century (SSP5-8.5 experiment) and
-the last 20 years of the 20$^{th}$ century (historical experiment). @fig-trend b and c) show the zonal mean of $\Delta T_{2.5}$ frequency for each latitude over sea and over land respectively. In the Northern Hemisphere over land, there is a robust decrease in $\Delta T_{2.5}$, particularly north of 40$^{\circ}$ latitude, except in western and central Europe where the multi-model mean shows an increase but the signal is not robust across the ensemble. A similar pattern of changes in front frequency was also found by @Catto2014 using CMIP5 and a different methodology to identify fronts, reinforcing the reliability of the methodology used in this analysis. Over the oceans, front frequency also tends to decrease over the North Atlantic, which shows a multi-model mean increase in front frequency west of continental Europe. This local increase may be interpreted as a shift of front frequency toward the pole in this sector, although it does not appear consistently across the ensemble.
+the last 20 years of the 20$^{th}$ century (historical experiment). @fig-trend b and c) show the zonal mean of $\Delta T_{2.5}$ frequency for each latitude over sea and over land respectively.
+
+@fig-trend d) show the $\Delta T$ values associated with the 2.5$^{th}$ percentile. We found that the spatial pattern correlates with the climatology of cold fronts proposed by @Berry2011 (their Figure 2a) or @King2024 (their Figure 6). This shows that temperature drops from one day to the next identified using this percentile are directly related to cold front passages.
+
+In terms of projected changes, in the Northern Hemisphere over land, there is a robust decrease in $\Delta T_{2.5}$, particularly north of 40$^{\circ}$ latitude, except in western and central Europe where the multi-model mean shows an increase but the signal is not robust across the ensemble. A similar pattern of changes in front frequency was also found by @Catto2014 using CMIP5 and a different methodology to identify fronts, reinforcing the reliability of the methodology used in this analysis. Over the oceans, front frequency also tends to decrease over the North Atlantic, which shows a multi-model mean increase in front frequency west of continental Europe. This local increase may be interpreted as a shift of front frequency toward the pole in this sector, although it does not appear consistently across the ensemble.
 
 In the Southern Hemisphere over land, the change is generally positive with an increase of 5 strong temperature falls per year in some areas. Other authors have also found an increase in the frequency of fronts in the south and east regions of Africa and Australia [@Catto2014; @Konstali2024]. 
 
 Changes in $\Delta T_{2.5}$ frequency over the Southern Hemisphere ocean regions are less robust across the ensemble, but the ensemble mean shows a tripolar pattern, with increases in a band centered around 40$^{\circ}$-50$^{\circ}$ S (depending on the longitude) and decreases poleward and equatorward. 
 This pattern indicates that the areas of higher front frequency shift poleward in the future scenario. In the Indian ocean, the pattern in more complicated, with a second band of increased frequency in the subtropics most pronounced in the Agulas region. 
 
+The analysis of the change in frequency of $\Delta T_{2.5}$ by season in DJF and JJA (Figure S1 a) show similar spatial patterns and the same sign of the change when compared with the change per year in @fig-trend a). The main exception is western Europe, where we see an increase in front frequency during winter but a decrease in summer.
 
 ```{r}
 #| label: fig-trend
 #| fig-width: 8
-#| fig-height: 4
-#| fig.cap: "a) Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2080-2100 minus Historical 1980-2000) and zonal mean change over sea b) and land c), each grey line represents a model listed in Table 1 and a black line represents the multimodel mean. In a) dotted areas show where at least 90% of the models agree in the sign of change."
+#| fig-height: 7
+#| fig.cap: "a) Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2080-2100 minus Historical 1980-2000) and zonal mean change over b) land and c) sea, each grey line represents a model listed in Table 1 and a black line represents the multimodel mean. In a) dotted areas show where at least 90% of the models agree in the sign of change. d) $\\Delta T$ values associated to the 2.5$^{th}$ percentile and zonal mean over e) land and f) sea."
 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
   rcdo::cdo_execute(options = "-f nc") |> 
@@ -251,19 +280,18 @@ map_trend <- data |>
                                    labels = function(x) JumpBy(x, 2, fill = "")) +
   geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
   geom_point(data = sig[is.cross(lon, lat, skip = 1) & abs(sig) >= 9], alpha = 0.3, shape = 4, size = 0.1) +
-  # ggnewscale::new_scale_fill() +
-  # geom_contour_fill(data = topo, aes(ConvertLongitude(lon), lat, z = topo), breaks = c(1300, Inf), fill = "grey90") +
   scale_y_latitude(breaks = seq(-80, 80 , 20)) +
   coord_sf(expand = FALSE, xlim = c(-179, 180)) +
+  tagger::tag_facets(tag_pool = c("a")) +
   labs(x = NULL, y = NULL, fill = "days/year") +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom",
         legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
         legend.key.width = grid::unit(1, 'null'),
         legend.margin = unit(c(-1, 0, -1, 0), units = "cm"), 
-        # axis.text.y = element_blank(),
-        # axis.ticks.y = element_blank(),
-        plot.margin = unit(c(-0.5, 0 , -0.5, 0), units = "cm")) 
+        plot.margin = unit(c(-0.5, 0 , -0.5, 0), units = "cm"),
+        tagger.panel.tag.text = element_text(size = 11),
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
 annotation <- data.frame(ymin = -66, ymax = -56, xmin = -Inf, xmax = Inf, land = "Land")
 
@@ -283,7 +311,7 @@ mean_trend <- data |>
             data = annotation,
             inherit.aes = FALSE) +
   facet_wrap(~land) +
-  tagger::tag_facets(tag_pool = c("b", "c")) +
+  tagger::tag_facets(tag_pool = c("b", "c"), position = "tr") +
   labs(x = "days/year") +
   coord_fixed(ratio = 1/2.8) +
   theme_minimal() +
@@ -295,12 +323,64 @@ mean_trend <- data |>
         tagger.panel.tag.text = element_text(size = 12),
         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
-plot_grid(map_trend, mean_trend, labels = c('a)', ''), 
-          label_x = 0, label_y = 0.94,
-          label_fontface = "plain", 
-          label_colour = "white",
-          rel_widths = c(2.25, 1))
+front <- plot_grid(map_trend, mean_trend,
+          rel_widths = c(2.25, 1)) +
+  theme(plot.margin = margin(b = -2, unit = "cm"))
 
+map_perc <- percentiles |> 
+  _[, .(mean_delta = mean(deltat)), by = .(lon, lat)] |> 
+  ggplot(aes(ConvertLongitude(lon), lat)) +
+  geom_contour_fill(aes(z = -mean_delta, fill = after_stat(level)),
+                    breaks = c(seq(0, 16, 1), Inf)) +
+  scale_fill_viridis_d(name = latex2exp::TeX("$\\Delta T$ (K)"),
+                       guide = guide_colorsteps(barheight = 0.5),
+                       direction = -1) +
+  geom_sf(data = global_map, inherit.aes = FALSE, fill = NA, linewidth = 0.2) +
+  scale_y_latitude(breaks = seq(-80, 80 , 20)) +
+  coord_sf(expand = FALSE, xlim = c(-179, 180)) +
+  labs(x = NULL, y = NULL) +
+  tagger::tag_facets(tag_pool = c("d")) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
+        legend.key.width = grid::unit(1, 'null'),
+        legend.margin = margin(0, 0, 0, 0, unit = "cm"), 
+        plot.margin = unit(c(-2, 0 , -1, 0), units = "cm"),
+        tagger.panel.tag.text = element_text(size = 11),
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+
+mean_perc <- percentiles |> 
+  _[(model %in% models_in_gadi)] |>
+  _[, let(land = MaskLand(lon, lat))] |> 
+  _[, let(land = factor(land, labels = c("Sea", "Land")))] |> 
+  _[, .(mean_dt = mean(deltat, na.rm = TRUE)), by = .(lat, land, model)] |> 
+  ggplot(aes(mean_dt, lat)) +
+  geom_path(aes(group = model), color = "grey70", alpha = 0.7) +
+  stat_summary(orientation = "y", geom = "line") +
+  scale_x_continuous(breaks = seq(-12, -0, 4)) +
+  scale_y_latitude(breaks = seq(-80, 80 , 20), position = "right") +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "#fbfbfb",
+            data = annotation,
+            inherit.aes = FALSE) +
+  facet_wrap(~land) +
+  tagger::tag_facets(tag_pool = c("e", "f"), position = "tr") +
+  labs(x = latex2exp::TeX("$\\Delta T$ (K)")) +
+  coord_fixed(ratio = 1/5) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "#fbfbfb", color = NA),
+        panel.grid.minor = element_line(linewidth = 0.1),
+        strip.text.x = element_text(size = 12),
+        plot.margin = unit(c(0.15, 0, 2.6, 0.25), units = "cm"),
+        tagger.panel.tag.text = element_text(size = 12),
+        tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
+
+perc <- plot_grid(map_perc, mean_perc,
+          rel_widths = c(2.25, 1)) +
+  theme(plot.margin = margin(t = -0.5, unit = "cm"))
+
+plot_grid(front, perc, ncol = 1, rel_heights = c(1, 1.1))
 ```
 
 @fig-serie shows ensemble-mean time series of the zonal-mean frequency of strong temperature falls for different latitude bands in each hemisphere. Consistent with the map in @fig-trend, the trends in frequency are negative over ocean in the Northern Hemisphere, but positive over land equatorward of 50$^{\circ}$ N. Over the Southern Hemisphere, trends are generally positive over land, with changes over ocean generally consistent with a poleward shift of fronts.
@@ -472,8 +552,9 @@ A similar relationship across the ensemble is present when comparing changes in 
 The exception is the Southern Hemisphere over land where all models project weak changes in EKE and large increases in the frequency of $\Delta T_{2.5}$. The reason for this difference is unclear, but could suggest the importance of local land processes in amplifying fronts over land in some regions of the Southern Hemisphere [@Muir2010]. Another hypothesis is that the most of the land affected by fronts in the Southern Hemisphere is north of the mean storm tracks, and thus the storm tracks has only a weak effect on temperature variability there.
 Supporting this, @Harvey2014 found that the storm track response in the Southern Hemisphere during summer is associated with the change in the low level $\partial \bar{T} / \partial y$ mainly poleward of 65$^{\circ}$ S, i.e. over the southern oceans. 
 
+The results associated with changes in EKE by season align with previous literature [@Priestley2022; @OGorman2010], with a general increase in EKE during summer and a decrease in winter in the Northern Hemisphere and a general positive change in the Southern Hemisphere in both seasons associated with a poleward shift of the storm tracks (Figure S2 c-d). Given these seasonal asymmetries, it is important to note that the change in EKE averaged over the entire year (@fig-eke b) is strongly associated with the winter season in each hemisphere. 
 
-Notwithstanding the above caveat, our results suggest that changes in the mean meridional temperature gradient and storm track intensity play an important role in modulating changes in front frequency in a warming climate. Indeed, differences in how these quantities change in projections appear to account for the differences in front frequency changes between hemispheres. However, our results do not provide strong evidence for the relative importance of the two factors: aside from over Southern Hemisphere, both factors correlate with the $\Delta T_{2.5}$ frequency across the model ensemble and both are theoretically associated with changes in temperature variability.
+Notwithstanding the above caveats, our results suggest that changes in the mean meridional temperature gradient and storm track intensity play an important role in modulating changes in front frequency in a warming climate. Indeed, differences in how these quantities change in projections appear to account for the differences in front frequency changes between hemispheres. However, our results do not provide strong evidence for the relative importance of the two factors: aside from over Southern Hemisphere, both factors correlate with the $\Delta T_{2.5}$ frequency across the model ensemble and both are theoretically associated with changes in temperature variability.
 
 
 ```{r}
@@ -573,6 +654,8 @@ This may reflect the fact that storm track dynamics have less direct control ove
 There are other factors not analyzed here that could contribute to the projected changes in frontal activity. For example, sea surface temperature (SST) gradients can influence the development and intensity of atmospheric fronts through air–sea interactions. @Parfitt2017 showed that surface sensible heat fluxes associated with strong SST gradients, such as those found in the Gulf Stream or Kuroshio Current regions, can amplify fronts through diabatic frontogenesis. However, @Reeder2021 showed that atmospheric fronts along SST fronts are amplified primarily by adiabatic frontogenesis, i.e. the deformation of the wind field that helps increase the equivalent potential temperature gradient.
 
 More generally, frontal cyclogenesis is directly affected by the wind and temperature fields. Consequently, projected changes in frontal frequency may also reflect modifications in the large-scale circulation, such as shifts in the background flow, changes in horizontal wind shear, or variations in baroclinicity. Further analysis is needed to quantify the contribution of these mechanisms to projected changes.
+
+Finally, this study focuses on cold fronts although warm fronts also play an important role in the distribution of extreme precipitation [@Catto2013]. We explored extending the methodology to warm fronts by considering day-to-day increases in maximum temperature. However, unlike cold fronts, warm fronts are not associated with a sufficiently distinct temperature signal to allow a simple threshold-based identification without also including changes associated with other local thermodynamic processes. Developing a simple and robust method for identifying warm fronts would extend the present framework and provide further insight into projected changes in frontal activity under climate change.
 
 
 ## Acknowledgments
