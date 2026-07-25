@@ -256,7 +256,7 @@ The analysis of the change in frequency of $\Delta T_{2.5}$ by season in DJF and
 ```{r}
 #| label: fig-trend
 #| fig-width: 8
-#| fig-height: 7
+#| fig-height: 8
 #| fig.cap: "a) Multimodel mean change in the frequency of $\\Delta T_{2.5}$ (days/year, SSP5-8.5 2080-2100 minus Historical 1980-2000) and zonal mean change over b) land and c) sea, each grey line represents a model listed in Table 1 and a black line represents the multimodel mean. In a) dotted areas show where at least 90% of the models agree in the sign of change. d) $\\Delta T$ values associated with the 2.5$^{th}$ percentile and zonal mean over e) land and f) sea."
 
 topo <- rcdo::cdo_topo(grid = "r360x180") |> 
@@ -325,7 +325,7 @@ mean_trend <- data |>
 
 front <- plot_grid(map_trend, mean_trend,
           rel_widths = c(2.25, 1)) +
-  theme(plot.margin = margin(b = -2, unit = "cm"))
+  theme(plot.margin = margin(t = 0, b = -1.5, unit = "cm"))
 
 map_perc <- percentiles |> 
   _[, .(mean_delta = mean(deltat)), by = .(lon, lat)] |> 
@@ -345,7 +345,7 @@ map_perc <- percentiles |>
         legend.frame = ggplot2::element_rect(color = "black", linewidth = 0.4),
         legend.key.width = grid::unit(1, 'null'),
         legend.margin = margin(0, 0, 0, 0, unit = "cm"), 
-        plot.margin = unit(c(-2, 0 , -1, 0), units = "cm"),
+        plot.margin = unit(c(0, 0 , -1, 0), units = "cm"),
         tagger.panel.tag.text = element_text(size = 11),
         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
@@ -363,7 +363,7 @@ mean_perc <- percentiles |>
             fill = "#fbfbfb",
             data = annotation,
             inherit.aes = FALSE) +
-  facet_wrap(~land) +
+  facet_wrap(~land, labeller = labeller(land = c(Land = " ", Sea = " "))) +
   tagger::tag_facets(tag_pool = c("e", "f"), position = "tr") +
   labs(x = latex2exp::TeX("$\\Delta T$ (K)")) +
   coord_fixed(ratio = 1/5) +
@@ -372,15 +372,15 @@ mean_perc <- percentiles |>
         panel.background = element_rect(fill = "#fbfbfb", color = NA),
         panel.grid.minor = element_line(linewidth = 0.1),
         strip.text.x = element_text(size = 12),
-        plot.margin = unit(c(0.15, 0, 2.6, 0.25), units = "cm"),
+        plot.margin = unit(c(1, 0, 1.5, 0.25), units = "cm"),
         tagger.panel.tag.text = element_text(size = 12),
         tagger.panel.tag.background = element_rect(fill = "white", color = "white")) 
 
 perc <- plot_grid(map_perc, mean_perc,
           rel_widths = c(2.25, 1)) +
-  theme(plot.margin = margin(t = -0.5, unit = "cm"))
+  theme(plot.margin = margin(t = -1.5, unit = "cm"))
 
-plot_grid(front, perc, ncol = 1, rel_heights = c(1, 1.1))
+plot_grid(front, perc, ncol = 1, rel_heights = c(1.3, 1))
 ```
 
 @fig-serie shows ensemble-mean time series of the zonal-mean frequency of strong temperature falls for different latitude bands in each hemisphere. Consistent with the map in @fig-trend, the trends in frequency are negative over ocean in the Northern Hemisphere, but positive over land equatorward of 50$^{\circ}$ N. Over the Southern Hemisphere, trends are generally positive over land, with changes over ocean generally consistent with a poleward shift of fronts.
