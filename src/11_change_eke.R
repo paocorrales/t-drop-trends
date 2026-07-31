@@ -1,11 +1,11 @@
-file_list <- Sys.glob(here("data/temp/100km/deltap97.5_year*"))
+file_list <- Sys.glob(here::here("data/temp/100km/deltap97.5_year*JJA*"))
 
 purrr::map(file_list, function(f) {
   
-  meta <- unglue::unglue(basename(f), "{var}_year_{model}_{scenario}_{member}.nc")
+  meta <- unglue::unglue(basename(f), "{var}_year_{model}_{scenario}_{member}_{date}_{season}.nc")
   
-  outfile <- here(paste0("data/temp/deltat/", meta[[1]][["var"]], "_", meta[[1]][["model"]], "_",
-                         meta[[1]][["scenario"]], "_mean.nc"))
+  outfile <- here::here(paste0("data/temp/deltat/", meta[[1]][["var"]], "_", meta[[1]][["model"]], "_",
+                         meta[[1]][["scenario"]], "_", meta[[1]][["season"]], ".nc"))
   
   if ( meta[[1]][["scenario"]] == "historical") {
     

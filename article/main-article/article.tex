@@ -1,0 +1,1117 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+]{agujournal2019}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\usepackage{url} %this package should fix any errors with URLs in refs.
+\usepackage{lineno}
+\usepackage[inline]{trackchanges} %for better track changes. finalnew option will compile document with changes incorporated.
+\usepackage{soul}
+\linenumbers
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Using rapid temperature falls to estimate future strong cold front frequency in CMIP6 climate projections},
+  pdfauthor={Paola B Corrales; Martin Singh; Michael J. Reeder},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\journalname{Geophysical Research Letters}
+
+\begin{document}
+\title{Using rapid temperature falls to estimate future strong cold
+front frequency in CMIP6 climate projections}
+
+\authors{Paola B Corrales\affil{1,2,3,4}, Martin
+Singh\affil{1,2,4}, Michael J. Reeder\affil{1,2}}
+\affiliation{1}{School of Earth, Atmosphere and Environment, Monash
+University, Melbourne, Australia}\affiliation{2}{ARC Centre of
+Excellence for Climate
+Extremes, Melbourne, Australia}\affiliation{3}{Research School of Earth
+Sciences, Australian National
+University, Canberra, Australia}\affiliation{4}{ARC Centre of Excellence
+for the Weather of the 21st Century, Melbourne, Australia}
+\correspondingauthor{Paola B Corrales}{paola.corrales@monash.edu}
+
+\begin{keypoints}
+\item Day-to-day falls in maximun temperature are used to identify cold
+fronts in CMIP6 models using the historical simulations and SSP5-8.5
+scenario. \item In the Northern Hemisphere the frequency of strong cold
+fronts decreases, whereas in the Southern Hemisphere the region of
+highest frecuency shifts poleward over the oceans and the frequency
+increases over land. \item Changes in cold front frequency correlated
+positively with changes in the meridional gradient of surface
+temperature in both hemispheres and with changes in storm tracks in the
+Northern Hemisphere. 
+\end{keypoints}
+
+\begin{abstract}
+We use day-to-day falls in daily-maximum surface air temperature to
+assess future changes in the frequency of strong cold fronts in a set of
+CMIP6 climate models under the SSP5-8.5 scenario. We find a general
+decrease in cold front frequency across the Northern Hemisphere,
+particularly over the oceans, and in the Southen Hemisphere a poleward
+shift in the region of highest frontal frequency, with increased
+frequency over midlatitude land regions. The frequency of strong
+temperature falls correlates positively with the meridional temperature
+gradient and transient eddy kinetic energy, implicating large-scale
+baroclinicity and changes in the storm track influence the pattern of
+strong cold fronts. Over Southern Hemisphere land areas, this
+relationship weakens, suggesting the influence of regional thermodynamic
+processes.
+\end{abstract}
+
+\section*{Plain Language Summary}
+Cold fronts, are defined by large temperature falls and sometimes
+accompanied by rain and strong wind. They play a key role in the
+day-to-day weather in midlatitudes. In this study, we use a simple
+method based on changes in maximun temperature from one day to the next
+to identify strong cold fronts in climate simulations. In the future
+climate projections from ten global models, strong cold fronts are less
+frequent in much of the Northern Hemisphere, especially over the oceans.
+In the Southern Hemisphere, however, strong cold fronts in the
+projections shift closer to the South Pole and may become more frequent
+over land areas like southern Australia and southern Africa. These
+changes are linked to shifts in the temperature contrast between the
+equator and the poles and the paths taken by storm systems.
+
+
+
+
+\section{Introduction}\label{introduction}
+
+Cold fronts are an important feature of weather in extratropical regions
+and their associated circulation contribute a substantial fraction of
+the precipitation in these regions (Catto \& Pfahl, 2013; Konstali et
+al., 2024). Cold fronts are at times linked to extreme events, such as
+heavy precipitation (Catto \& Pfahl, 2013) and severe wildfires in
+southern Australia (Reeder et al., 2015) and other regions.
+Understanding how cold fronts, and especially strong cold fronts, change
+in a warming climate is therefore of importance for understanding the
+changing likelihood of extremes and fire weather.
+
+Several computational methods have been developed to identify cold
+fronts using different characteristics. Some of these methods look for
+spatial gradients in temperature and humidity at different atmospheric
+levels (Berry et al., 2011), others identify gradients in the wind field
+alone (Simmonds et al., 2012) or a combination of dynamic and
+thermodynamic variables (Thomas \& Schultz, 2019). These methods have
+been developed for the data on a regular grid (e.g.~outputs from
+numerical models or reanalysis) and their results depend on setting
+different thresholds, which may need to be calibrated for different grid
+resolutions.
+
+Here, we take the simplest approach, first introduced by Reeder et al.
+(2015). We measure the occurrence of cold fronts using temporal changes
+in temperature at a fixed location. Specifically, we identify the
+passage of cold fronts with large day-to-day falls in near-surface
+daily-maximum temperature. This method has been shown to be suitable for
+the detection of strong cold fronts in southeastern Australia (Cai et
+al., 2022; Reeder et al., 2015), and can successfully identify cold
+fronts in data with different resolutions, including both station data
+and reanalyses (King et al., 2024). King et al. (2024) developed a
+climatology of cold-front frequency in global climate models from phase
+6 of the Coupled Model Intercomparison Project (CMIP6) which produced
+results comparable to other, more complex, cold-front detection
+algorithms. While the models tend to overestimate front frequency in
+polar regions and underestimate the occurrence of large temperature
+falls over midlatitude land regions compared with ERA5, they accurately
+represent the patterns of front frequency equatorward of about 60°.
+
+As global temperatures continue to rise, understanding how this warming
+will affect the occurrence of cold fronts is crucial for projecting
+changes in extreme weather and fire risk. One of the few studies to
+address this question is Catto et al. (2014), who identified fronts
+using an objective detection method based on temperature and humidity
+fields (Berry et al., 2011). In this framework, fronts are represented
+as line features, marking sharp gradients in thermodynamic variables.
+Using this approach in 18 CMIP5 models, they compared historical
+simulations (1980--2005) with projections under the Representative
+Concentration Pathway 8.5 scenario (2080--2100). They found an overall
+decrease in front frequency in the Northern Hemisphere, with a poleward
+shift in the latitude of maximum frequency and a significant decrease at
+high latitudes. The Southern Hemisphere also showed a poleward shift in
+the frequency maximum.
+
+In contrast, Konstali et al. (2024) identified fronts in CESM2-LE
+simulations using the gradient of equivalent potential temperature at
+850 hPa. In this approach, frontal systems are represented as areas of
+strong gradients rather than discrete lines. Using this methodology,
+they found an increase in the frequency of fronts, which they suggest
+may be associated with fronts becoming stronger or more elongated in
+both hemispheres.
+
+Motivated by the contrasting results of previous studies, we re-examine
+how the distribution of cold fronts change in projections from the CMIP6
+ensemble, but we consider a simpler method of estimating changes in
+front frequency and intensity with cooling based on day-to-day falls in
+maximum surface air temperature. This approach offers several
+advantages. First, the method's simplicity and weak
+resolution-dependence (as shown by King et al., 2024) allows us to
+compare it with earlier studies using other methodologies. Second,
+focusing on local temperature falls provides a complementary perspective
+to Lagrangian approaches, as day-to-day temperature falls are the most
+direct impact of cold fronts on local weather.
+
+Consistent with Catto et al. (2014), we find a decrease in cold front
+frequency in the Northern Hemisphere and a poleward shift in the
+Southern Hemisphere. Seeking to develop a physical explanation for these
+changes, we first study the response of the meridional temperature
+gradient and its relationship with the change in front frequency. We
+also explore the relationship between changes in front frequency and
+transient eddy kinetic energy, as it is directly related to the storm
+tracks. Several studies have shown a poleward shift on the storm tracks
+in future climate change scenarios, particularly in the Southern
+Hemisphere (Chemke, 2022; O'Gorman, 2010; Tamarin \& Kaspi, 2017), and
+these changes could also influence the location and intensity of future
+cold fronts.
+
+\section{Data and Methods}\label{data-and-methods}
+
+We analyse 10 models from phase 6 of the Coupled Model Intercomparison
+Project (CMIP6, Eyring et al. (2016)), including the Historical
+experiment up to 2014 and the Shared Socioeconomic Pathways 5 (SSP5-8.5)
+from the Scenario Model Intercomparison Project (ScenarioMIP, O'Neill et
+al. (2016)) from 2015 to 2100, as described in Table~\ref{tbl-models}.
+We selected these models based on the data available for the historical
+and scenario experiments stored on the Australian National Computational
+Infrastructure (NCI) replica data store.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6273}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1818}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1909}}@{}}
+\caption{List of the coupled model intercomparison project phase 6
+(CMIP6) climate model used in this
+analysis.}\label{tbl-models}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Institution
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Ensamble member used
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Institution
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Ensamble member used
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+CMCC-ESM2 & & \\
+(Lovato et al., 2021a, 2021b) & CMCC & r1i1p1f1 \\
+EC-Earth3 & & \\
+(Consortium (EC-Earth), 2019a, 2019b) & EC-Earth-Consortium &
+r1i1p1f1 \\
+EC-Earth3-CC & & \\
+(Consortium (EC-Earth), 2020a, 2021) & EC-Earth-Consortium & r1i1p1f1 \\
+EC-Earth3-Veg & & \\
+(Consortium (EC-Earth), 2019c, 2019d) & EC-Earth-Consortium &
+r1i1p1f1 \\
+EC-Earth3-Veg-LR & & \\
+(Consortium (EC-Earth), 2020b, 2023) & EC-Earth-Consortium & r1i1p1f1 \\
+GFDL-CM4 & & \\
+(Guo, John, Blanton, McHugh, Nikonov, Radhakrishnan, Rand, Zadeh,
+Balaji, Durachta, Dupuis, Menzel, Robinson, Underwood, Vahlenkamp,
+Bushuk, et al., 2018; 2018) & NOAA-GFDL & r1i1p1f1 \\
+INM-CM4-8 & & \\
+Volodin et al. (2019b) & INM & r1i1p1f1 \\
+INM-CM5-0 & & \\
+(Volodin et al., 2019c, 2019d) & INM & r1i1p1f1 \\
+MPI-ESM1-2-HR & & \\
+(Jungclaus et al., 2019; Schupfner et al., 2019) & DKRZ & r1i1p1f1 \\
+NorESM2-MM & & \\
+(Bentsen et al., 2019a, 2019b) & NCC & r1i1p1f1 \\
+\end{longtable}
+
+\subsection{Front Identification}\label{front-identification}
+
+We identify falls in near-surface (2 meter) air temperature as a proxy
+for frontal passages by calculating the change in daily maximum
+temperature from one day to the next (\(\Delta T\)). \(\Delta T\) is
+calculated for all grid points and days in the study period. King et al.
+(2024) defined a passage of a strong cold front as
+\(\Delta T \le -10^{\circ}C\). That is, a cold front passage is
+identified on day \(i\) if the maximum temperature on day \(i+1\) is at
+least 10 deg C lower than that of day \(i\). While this value is
+reasonable for detecting strong falls in temperature over land, it may
+underestimate the frequency of fronts over the ocean due to the weaker
+temperature variability. For this reason, in this study, we use the
+2.5\(^{th}\) percentile of \(\Delta T\) as a threshold for each grid
+point to identify strong falls in temperature, hereafter
+\(\Delta T_{2.5} = \Delta T \le 2.5^{th}\) percentile. This percentile
+is chosen because the mean of the 2.5\(^{th}\) percentile over all
+midlatitude land areas (between 25\(^{\circ}\) to 55\(^{\circ}\)) is
+close to \(-10^{\circ}C\), the threshold used by King et al. (2024). The
+percentiles are calculated over the historical period between 1979 and
+2014 for each model at each grid point. Additionally, the percentile
+values are also calculated over the same period for
+December-January-February (DJF) and June-July-August (JJA) for the
+seasonal analysis (see Supplemental Information).
+
+It is important to note that by using this threshold we detect frontal
+passages in exactly 2.5\% of days. In regions of regular frontal passage
+the 2.5\(^{th}\) percentile of \(\Delta T\) generally corresponds to
+strong fronts, and our identification method produces reasonable
+results. However, outside these regions (e.g., in the tropics) we
+identify temperature falls that can be associated with midlatitude
+front-like features but also other processes.
+
+\subsection{Time-mean Meridional Temperature
+Gradient}\label{time-mean-meridional-temperature-gradient}
+
+We calculated the time-mean meridional temperature gradient
+(\(\partial \bar{T}/ \partial y\)) at each grid point using central
+finite differences for the temperature at 850 hPa. We then area-averaged
+\(\partial \bar{T}/ \partial y\) over different regions, e.g., between
+25\(^{\circ}\) and 65\(^{\circ}\) latitude for each hemisphere. This
+process produces the same results as if calculating the temperature
+difference between two latitudes but has the advantage of allowing the
+calculation of \(\partial \bar{T}/ \partial y\) for regions over land
+and sea independently.
+
+\subsection{Storm Tracks Estimation}\label{sec-storm-track}
+
+To estimate the storm track location we follow previous work (Chemke,
+2022; O'Gorman, 2010) and use the high-pass filtered transient eddy
+kinetic energy (EKE) in the upper troposphere. For each model, we
+calculated the EKE as \(EKE = 0.5(u'^2 + v'^2)\), where \(u'\) and
+\(v'\) are obtained using a Fast Fourier Transform high-pass filter
+applied to daily horizontal wind at 250 hPa with a 6-day cutoff.
+
+\section{Results}\label{results}
+
+Figure~\ref{fig-trend} a) shows the change in the frequency of
+\(\Delta T_{2.5}\) between the yearly averaged \(\Delta T_{2.5}\)
+frequency for last 20 years of the 21\(^{st}\) century (SSP5-8.5
+experiment) and the last 20 years of the 20\(^{th}\) century (historical
+experiment). Figure~\ref{fig-trend} b and c) show the zonal mean of
+\(\Delta T_{2.5}\) frequency for each latitude over sea and over land
+respectively.
+
+Figure~\ref{fig-trend} d) shows the \(\Delta T\) values that define the
+2.5\(^{th}\) percentile. We found that the spatial pattern correlates
+with the climatology of cold fronts from Berry et al. (2011) (their
+Figure 2a) and King et al. (2024) (their Figure 6). This consistency
+supports our proposition that temperature falls identified here are
+directly related to cold front passages.
+
+In terms of projected changes, in the Northern Hemisphere over land,
+there is a robust decrease in \(\Delta T_{2.5}\), particularly north of
+40\(^{\circ}\) latitude, except in western and central Europe where the
+multi-model mean shows an increase but the signal is not robust across
+the ensemble. A similar pattern of changes in front frequency was also
+found by Catto et al. (2014) using CMIP5 and a different methodology to
+identify fronts, reinforcing the reliability of the methodology used in
+this analysis. Over the oceans, front frequency also tends to decrease
+over the North Atlantic, which shows a multi-model mean increase in
+front frequency west of continental Europe. This local increase may be
+interpreted as a shift of front frequency toward the pole in this
+sector, although it does not appear consistently across the ensemble.
+
+In the Southern Hemisphere over land, the change is generally positive
+with an increase of 5 strong temperature falls per year in some areas.
+Other authors have also found an increase in the frequency of fronts in
+the south and east regions of Africa and Australia (Catto et al., 2014;
+Konstali et al., 2024).
+
+Changes in \(\Delta T_{2.5}\) frequency over the Southern Hemisphere
+ocean regions are less robust across the ensemble, but the ensemble mean
+shows a tripolar pattern, with increases in a band centered around
+40\(^{\circ}\)-50\(^{\circ}\) S (depending on the longitude) and
+decreases poleward and equatorward. This pattern indicates that the
+areas of higher front frequency shift poleward in the future scenario.
+In the Indian ocean, the pattern in more complicated, with a second band
+of increased frequency in the subtropics is most pronounced in the
+Agulas region.
+
+The analysis of the change in frequency of \(\Delta T_{2.5}\) by season
+in DJF and JJA (Figure S1 a) shows similar spatial patterns and the same
+sign of the change when compared with the change per year in
+Figure~\ref{fig-trend} a). The main exception is western Europe, where
+we find an increase in front frequency during winter but a decrease in
+summer.
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{article_files/figure-pdf/fig-trend-1.pdf}}
+
+}
+
+\caption{\label{fig-trend}a) Multimodel mean change in the frequency of
+\(\Delta T_{2.5}\) (days/year, SSP5-8.5 2080-2100 minus Historical
+1980-2000) and zonal mean change over b) land and c) sea, each grey line
+represents a model listed in Table 1 and a black line represents the
+multimodel mean. In a) dotted areas show where at least 90\% of the
+models agree in the sign of change. d) \(\Delta T\) values associated
+with the 2.5\(^{th}\) percentile and zonal mean over e) land and f)
+sea.}
+
+\end{figure}%
+
+Figure~\ref{fig-serie} shows ensemble-mean time series of the zonal-mean
+frequency of strong temperature falls for different latitude bands in
+each hemisphere. Consistent with the map in Figure~\ref{fig-trend}, the
+trends in frequency are negative over ocean in the Northern Hemisphere,
+but positive over land equatorward of 50\(^{\circ}\) N. Over the
+Southern Hemisphere, trends are generally positive over land, with
+changes over ocean generally consistent with a poleward shift of fronts.
+
+While there is considerable variation in these trends between models
+(see boxplots on right of Figure~\ref{fig-serie}), particularly at more
+poleward locations, for most of the zonal mean trends, there is
+consistency in the sign of the trend across models.
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{article_files/figure-pdf/fig-serie-1.pdf}}
+
+}
+
+\caption{\label{fig-serie}Multimodel yearly mean frequency of
+\(\Delta T_{2.5}\) for the historical period (1900-2014) and SSP5-8.5
+(2015-2100) over land and sea for different 2° wide latitude bands
+centered at 30, 40 and 50°. The grey line represents the climatological
+frecuency for 1979-2014, equal to 9.125 \(\Delta T_{2.5}\)/year. On the
+right of each panel box plots of the intermodel distribution is shown
+for the period 2080-2100. In the boxplots the lower and upper hinges
+correspond to the first and third quartiles and the upper (lower)
+whisker extends to the largest (smallest) value no further than 1.5 *
+inter-quartile range. Outside the whiskers dots represents outliers.}
+
+\end{figure}%
+
+To explore the distribution of the change in temperature falls of
+different intensity, Figure~\ref{fig-distribution} shows the change in
+the frequency of \(\Delta T\) using different percentiles, from
+10\(^{th}\) to 0.1\(^{th}\), as thresholds to identify the falls in
+temperature. The percentile values are again calculated from the
+historical period between 1979 and 2014 for each grid point and model as
+in Figure~\ref{fig-trend}.
+
+Figure~\ref{fig-distribution} shows that, in most cases, the sign of the
+change is the same across all percentile thresholds, meaning that there
+is a projected increase or decrease in the frequency of \(\Delta T\)
+regardless of the intensity of the temperature fall. The exceptions are
+the Southern Hemisphere over sea and the Northern Hemisphere over land
+in the 40 \(^{\circ}\) latitude band, where there is a modest increase
+in strong temperature falls but a small decrease in weaker falls.
+
+Moreover the change in the frequency of \(\Delta T\) is greater at lower
+percentile thresholds, which identify more extreme temperature falls.
+For example, in the Northern Hemisphere over the sea, the 0.1\(^{th}\)
+percentile threshold shows that there will be less than half as many
+falls in temperature in the future over 50\(^{\circ}\) N, with the
+opposite expected over land in the Southern Hemisphere. However, lower
+percentile thresholds are associated with rarer events, meaning fewer
+occurrences per year. These results suggest that regions projected to
+experience more temperature falls in the future, such as land areas in
+midlatitudes in the Southern Hemisphere, will also experience larger
+\(\Delta T\), whereas regions with a decreasing frequency of falls will
+see smaller falls.
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{article_files/figure-pdf/fig-distribution-1.pdf}}
+
+}
+
+\caption{\label{fig-distribution}Fractional change in the frequency of
+strong \(\Delta T\) averaged between the years 2080-2100 under the
+SSP5-8.5 scenario compared to that averaged between 1980-2000 in the
+historical scenario, for different thresholds defined by their
+percentile value for each grid point and model calculated over the
+historical period (1979-2014).}
+
+\end{figure}%
+
+\subsection{Mechanisms}\label{mechanisms}
+
+We now investigate the mechanisms driving the changes in
+\(\Delta T_{2.5}\) frequency described above. We take a simple
+perspective on midlatitude temperature variability based on advection as
+a key driver (Schneider et al., 2015). According to this view, changes
+in midlatitude temperature variability are closely linked to changes in
+large-scale temperature gradients and to the strength of mixing by
+geostrophic turbulence. Motivated by this perspective, we explore
+relationships between changes in front frequency and changes in the
+large-scale meridional temperature gradient
+(\(\partial \bar{T} / \partial y\)) and EKE within the midlatitude storm
+tracks.
+
+Figure~\ref{fig-eke} a) shows that, in both hemispheres, there is a
+strong correlation between increases in front frequency and changes in
+the large-scale meridional surface temperature gradient
+\(\partial \bar{T} / \partial y\) across models. Here,
+\(\partial \bar{T} / \partial y\) is taken as the time and zonal-mean
+meridional temperature gradient averaged between 25\(^{\circ}\) and
+65\(^{\circ}\) in each hemisphere over either land or ocean. As
+previously noted by Catto et al. (2014), reductions in front frequency
+in the Northern Hemisphere are associated with a decrease in the the
+temperature gradient near the surface, while opposite changes in surface
+temperature gradients in the Southern Hemisphere drive increases is
+front frequency there. Here, we find that this relationship holds within
+the model ensemble; larger increases or decreases in
+\(\partial \bar{T} / \partial y\) in a given model are associated with
+larger projected increases or decreases in \(\Delta T\), a relationship
+that is particularly strong in the Northern Hemisphere.
+
+There is a similar relationship across the ensemble between changes in
+the frequency of \(\Delta T_{2.5}\) and changes in the energy of the
+storm track. Here we estimate the storm track energy by taking the
+high-pass filtered eddy kinetic energy at 250 hPa (see
+Section~\ref{sec-storm-track}) and integrating over the 25\(^{\circ}\)
+and 65\(^{\circ}\) latitudes in each hemisphere. Models with projected
+decreases in EKE tend to project larger decreases in the frequency of
+\(\Delta T_{2.5}\). The exception is the Southern Hemisphere over land
+where all models project weak changes in EKE and large increases in the
+frequency of \(\Delta T_{2.5}\). The reason for this difference is
+unclear, but could suggest the importance of local land processes in
+amplifying fronts over land in some regions of the Southern Hemisphere
+(Muir \& Reeder, 2010). Moreover, most of the land affected by fronts in
+the Southern Hemisphere is north of the mean storm track, and thus the
+storm track has only a weak effect on temperature variability there.
+Supporting this, Harvey et al. (2014) found that the storm track
+response in the Southern Hemisphere during summer is associated with the
+change in the low level \(\partial \bar{T} / \partial y\) mainly
+poleward of 65\(^{\circ}\) S, i.e.~over the southern oceans.
+
+In agreement with the previous literature on seasonal changes n the
+midlatitude storm track (O'Gorman, 2010; Priestley \& Catto, 2022), we
+find a general increase in EKE during summer and a decrease in winter in
+the Northern Hemisphere. There is also a general positive change in the
+Southern Hemisphere in both seasons associated with a poleward shift of
+the storm tracks (Figure S2 c-d). Given these seasonal asymmetries, it
+is important to note that the change in EKE averaged over the entire
+year (Figure~\ref{fig-eke} b) is dominated by the winter season in each
+hemisphere.
+
+Notwithstanding the above caveats, our results suggest that changes in
+the mean meridional temperature gradient and storm track intensity play
+an important role in modulating changes in front frequency in a warming
+climate. Indeed, differences in how these quantities change in
+projections appear to account for the differences in front frequency
+changes between hemispheres. However, our results do not provide strong
+evidence for the relative importance of the two factors: aside from over
+Southern Hemisphere, both factors correlate with the \(\Delta T_{2.5}\)
+frequency across the model ensemble and both are theoretically
+associated with changes in temperature variability.
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{article_files/figure-pdf/fig-eke-1.pdf}}
+
+}
+
+\caption{\label{fig-eke}Mean change in the mean \(\Delta T_{2.5}\)
+frequency and a) mean merdional temperature gradient
+\(\partial \bar{T} / \partial y\) and b) the EKE of the storm track for
+SSP5-8.5 (2080-2100) compared with the historical period (1980-2000) for
+each model. Values are calculated for the Northern (25\(^{\circ}\) to
+65\(^{\circ}\)) and Southern (-25\(^{\circ}\) to -65\(^{\circ}\))
+Hemispheres and over sea (circles) and land (triangles). Each solid line
+corresponds to a linear regression for each hemisphere.}
+
+\end{figure}%
+
+\section{Summary and Discussion}\label{summary-and-discussion}
+
+In this study, we use day-to-day falls in near-surface maximum
+temperature to detect cold fronts, and we evaluate changes in their
+frequency under future warming in a set of 10 models from CMIP6. By
+using a specific percentile threshold, we ensure a consistent detection
+of strong temperature falls across different regions, improving the
+detection particularly over oceans where the temperature variability is
+lower. While the temperature fall method may occasionally misidentify
+other forms of temperature variability as fronts, previous studies have
+shown that this methodology provides a simple and robust method for
+characterising the frequency of fronts over midlatitude regions (King et
+al., 2024).
+
+Our results show a general decrease in the frequency of fronts across
+the Northern Hemisphere, especially over oceans, and a poleward shift in
+frontal activity in the Southern Hemisphere. Over land in the Southern
+Hemisphere, notably in southern Australia and Africa, we find an
+increase in frontal frequency and intensity. These findings align with
+previous studies using more complex methods to identify fronts,
+strengthening confidence in our approach.
+
+We find a positive correlation between changes in \(\Delta T_{2.5}\)
+frequency and the meridional temperature gradient and transient eddy
+kinetic energy (EKE). This is consistent with a model for midlatitude
+temperature variability driven primarily by advection, and suggests that
+the large-scale baroclinic background state is an important control on
+front frequency in a warming climate. Further work could tease apart the
+individual effects of temperature gradients versus the intensity of the
+storm track, noting that these are linked, since changes in the mean
+thermodynamic structure affect how the storm track behaves (O'Gorman,
+2010). An important exception to the above correlations is that, in
+Southern Hemisphere land regions, front frequency increases despite a
+decrease in the EKE of the storm track. This may reflect the fact that
+storm track dynamics have less direct control over frontal systems in
+this region, which could be more influenced by mesoscale processes,
+land--sea contrast, and regional thermodynamic effects.
+
+There are other factors not analyzed here that could contribute to the
+projected changes in frontal activity. For example, sea surface
+temperature (SST) gradients can influence the development and intensity
+of atmospheric fronts through air--sea interactions. Parfitt et al.
+(2017) suggested that surface sensible heat fluxes associated with
+strong SST gradients, such as those found in the Gulf Stream or Kuroshio
+Current regions, can amplify atmospheric fronts through diabatic
+frontogenesis, although Reeder et al. (2021) showed that the effect was
+only significant when the fronts were weak. In contrast, Reeder et al.
+(2021) showed that strong atmospheric fronts along SST fronts are
+amplified primarily by adiabatic frontogenesis (i.e.~the deformation of
+the wind field).
+
+More generally, frontal cyclogenesis is directly affected by the wind
+and temperature fields. Consequently, projected changes in frontal
+frequency may also reflect modifications in the large-scale circulation,
+such as shifts in the background flow, changes in horizontal wind shear,
+or variations in baroclinicity. Further analysis is needed to quantify
+the contribution of these mechanisms to projected changes.
+
+Finally, while this study focuses on cold fronts, in some regions warm
+fronts also play an important role in the distribution of extreme
+precipitation (Catto \& Pfahl, 2013). We explored extending the
+methodology to warm fronts by considering day-to-day increases in
+maximum temperature. However, unlike cold fronts, warm fronts are not
+associated with a sufficiently distinct temperature signal to allow a
+simple threshold-based identification without also including changes
+associated with other local thermodynamic processes. Developing a simple
+and robust method for identifying warm fronts would extend the present
+framework and provide further insight into projected changes in frontal
+activity under climate change.
+
+\section{Acknowledgments}\label{acknowledgments}
+
+This research was supported by the Australian Research Council Centre of
+Excellence for Climate Extremes (CE170100023), the Australian Research
+Council Centre of Excellence for the Weather of the 21st Century
+(CE230100012), with the assistance of resources from the National
+Computational Infrastructure (NCI Australia), an NCRIS enabled
+capability supported by the Australian Government. P.C. also
+acknowledges the use of the following open-source software projects that
+supported data analysis, visualization, and reproducible reporting: R
+(v4.3.1, R Core Team (2023)), metR (Campitelli, 2025a), rcdo
+(Campitelli, 2025b), data.table (Barrett et al., 2025), ggplot2
+(Wickham, 2016), patchwork (Pedersen, 2024), cowplot (Wilke, 2024),
+ggside (Landis, 2024), and Quarto (Allaire et al., 2025).
+
+\section{Open research}\label{open-research}
+
+The CMIP6 data used in the manuscript is publicly available at the Earth
+System Grid Federation \url{https://esgf-node.llnl.gov/projects/cmip6/}.
+A version-controlled repository of the code used to create this
+analysis, including the necessary code to download the derived data can
+be found at \url{https://doi.org/10.5281/zenodo.21713532}. The derived
+data that support the findings of this study are also openly available
+in Zenodo at \url{https://doi.org/10.5281/zenodo.19840311}, version 0.9.
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\vspace{1em}
+
+\bibitem[\citeproctext]{ref-quarto}
+Allaire, J. J., Teague, C., Scheidegger, C., Xie, Y., Dervieux, C., \&
+Woodhull, G. (2025, April). {Quarto} (Version 1.7).
+\url{https://doi.org/10.5281/zenodo.5960048}
+
+\bibitem[\citeproctext]{ref-data.table}
+Barrett, T., Dowle, M., Srinivasan, A., Gorecki, J., Chirico, M.,
+Hocking, T., et al. (2025). Data.table: Extension of `data.frame`.
+
+\bibitem[\citeproctext]{ref-Bentsen2019}
+Bentsen, M., Oliviè, D. J. L., Seland, Ø., Toniazzo, T., Gjermundsen,
+A., Graff, L. S., et al. (2019a). {IPCC DDC}: {NCC NorESM2-MM} model
+output prepared for {CMIP6 CMIP} {[}Data set{]}. World Data Center for
+Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMNCCN2}
+
+\bibitem[\citeproctext]{ref-Bentsen2019a}
+Bentsen, M., Oliviè, D. J. L., Seland, Ø., Toniazzo, T., Gjermundsen,
+A., Graff, L. S., et al. (2019b). {IPCC DDC}: {NCC NorESM2-MM} model
+output prepared for {CMIP6 ScenarioMIP} {[}Data set{]}. World Data
+Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPNCCN2}
+
+\bibitem[\citeproctext]{ref-Berry2011}
+Berry, G., Reeder, M. J., \& Jakob, C. (2011). A global climatology of
+atmospheric fronts. \emph{Geophysical Research Letters}, \emph{38}(4).
+\url{https://doi.org/10.1029/2010GL046451}
+
+\bibitem[\citeproctext]{ref-Cai2022}
+Cai, D., Abram, N. J., Sharples, J. J., \& Perkins-Kirkpatrick, S. E.
+(2022). Increasing intensity and frequency of cold fronts contributed to
+{Australia}'s 2019--2020 {Black Summer} fire disaster.
+\emph{Environmental Research Letters}, \emph{17}(9), 094044.
+\url{https://doi.org/10.1088/1748-9326/ac8e88}
+
+\bibitem[\citeproctext]{ref-metR}
+Campitelli, E. (2025a). metR: Tools for easier analysis of
+meteorological fields. \url{https://doi.org/10.5281/zenodo.2593516}
+
+\bibitem[\citeproctext]{ref-rcdo}
+Campitelli, E. (2025b). Rcdo: Create CDO commands from r functions.
+Retrieved from \url{https://eliocamp.github.io/rcdo/}
+
+\bibitem[\citeproctext]{ref-Catto2013}
+Catto, J. L., \& Pfahl, S. (2013). The importance of fronts for extreme
+precipitation. \emph{Journal of Geophysical Research: Atmospheres},
+\emph{118}(19), 10, 791--10, 801.
+\url{https://doi.org/10.1002/jgrd.50852}
+
+\bibitem[\citeproctext]{ref-Catto2014}
+Catto, J. L., Nicholls, N., Jakob, C., \& Shelton, K. L. (2014).
+Atmospheric fronts in current and future climates. \emph{Geophysical
+Research Letters}, \emph{41}(21), 7642--7650.
+\url{https://doi.org/10.1002/2014GL061943}
+
+\bibitem[\citeproctext]{ref-Chemke2022}
+Chemke, R. (2022). The future poleward shift of {Southern Hemisphere}
+summer mid-latitude storm tracks stems from ocean coupling. \emph{Nature
+Communications}, \emph{13}(1), 1730.
+\url{https://doi.org/10.1038/s41467-022-29392-4}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2019}
+Consortium (EC-Earth), E.-E. (2019a). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3} model output prepared for {CMIP6 CMIP} {[}Data set{]}. World
+Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMEEE3}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2019a}
+Consortium (EC-Earth), E.-E. (2019b). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3} model output prepared for {CMIP6 ScenarioMIP} {[}Data set{]}.
+World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPEEE3}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2019b}
+Consortium (EC-Earth), E.-E. (2019c). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3-Veg} model output prepared for {CMIP6 CMIP} {[}Data set{]}.
+World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMEEEVE}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2019c}
+Consortium (EC-Earth), E.-E. (2019d). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3-Veg} model output prepared for {CMIP6 ScenarioMIP} {[}Data
+set{]}. World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPEEEVE}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2020}
+Consortium (EC-Earth), E.-E. (2020a). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth-3-CC} model output prepared for {CMIP6 CMIP} {[}Data set{]}.
+World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMEEEEC}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2020a}
+Consortium (EC-Earth), E.-E. (2020b). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3-Veg-LR} model output prepared for {CMIP6 CMIP} {[}Data set{]}.
+World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMEEEVL}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2021}
+Consortium (EC-Earth), E.-E. (2021). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3-CC} model output prepared for {CMIP6 ScenarioMIP} {[}Data
+set{]}. World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPEEEEC}
+
+\bibitem[\citeproctext]{ref-ConsortiumEC-Earth2023}
+Consortium (EC-Earth), E.-E. (2023). {IPCC DDC}: {EC-Earth-Consortium
+EC-Earth3-Veg-LR} model output prepared for {CMIP6 ScenarioMIP} {[}Data
+set{]}. World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPEEEVL}
+
+\bibitem[\citeproctext]{ref-Eyring2016}
+Eyring, V., Bony, S., Meehl, G. A., Senior, C. A., Stevens, B.,
+Stouffer, R. J., \& Taylor, K. E. (2016). Overview of the {Coupled Model
+Intercomparison Project Phase} 6 ({CMIP6}) experimental design and
+organization. \emph{Geoscientific Model Development}, \emph{9}(5),
+1937--1958. \url{https://doi.org/10.5194/gmd-9-1937-2016}
+
+\bibitem[\citeproctext]{ref-Guo2018}
+Guo, H., John, J. G., Blanton, C., McHugh, C., Nikonov, S.,
+Radhakrishnan, A., Rand, K., Zadeh, N. T., Balaji, V., Durachta, J.,
+Dupuis, C., Menzel, R., Robinson, T., Underwood, S., Vahlenkamp, H.,
+Bushuk, M., et al. (2018). {IPCC DDC}: {NOAA-GFDL GFDL-CM4} model output
+{[}Data set{]}. World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMNGGFC}
+
+\bibitem[\citeproctext]{ref-Guo2018a}
+Guo, H., John, J. G., Blanton, C., McHugh, C., Nikonov, S.,
+Radhakrishnan, A., Rand, K., Zadeh, N. T., Balaji, V., Durachta, J.,
+Dupuis, C., Menzel, R., Robinson, T., Underwood, S., Vahlenkamp, H.,
+Dunne, K. A., et al. (2018). {IPCC DDC}: {NOAA-GFDL GFDL-CM4} model
+output prepared for {CMIP6 ScenarioMIP} {[}Data set{]}. World Data
+Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPNGGFD}
+
+\bibitem[\citeproctext]{ref-Harvey2014}
+Harvey, B. J., Shaffrey, L. C., \& Woollings, T. J. (2014).
+Equator-to-pole temperature differences and the extra-tropical storm
+track responses of the {CMIP5} climate models. \emph{Climate Dynamics},
+\emph{43}(5), 1171--1182.
+\url{https://doi.org/10.1007/s00382-013-1883-9}
+
+\bibitem[\citeproctext]{ref-Jungclaus2019}
+Jungclaus, J., Bittner, M., Wieners, K.-H., Wachsmann, F., Schupfner,
+M., Legutke, S., et al. (2019). {IPCC DDC}: {MPI-M MPIESM1}.2-{HR} model
+output prepared for {CMIP6 CMIP} {[}Data set{]}. World Data Center for
+Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMMXME2}
+
+\bibitem[\citeproctext]{ref-King2024}
+King, M. J., Reeder, M. J., \& Jakob, C. (2024). Strong temperature
+falls as a cold frontal metric in {Australian} station observations,
+reanalyses and climate models. \emph{Quarterly Journal of the Royal
+Meteorological Society}, \emph{150}(765), 4788--4805.
+\url{https://doi.org/10.1002/qj.4841}
+
+\bibitem[\citeproctext]{ref-Konstali2024}
+Konstali, K., Spengler, T., Spensberger, C., \& Sorteberg, A. (2024).
+Linking {Future Precipitation Changes} to {Weather Features} in
+{CESM2-LE}. \emph{Journal of Geophysical Research: Atmospheres},
+\emph{129}(16), e2024JD041190.
+\url{https://doi.org/10.1029/2024JD041190}
+
+\bibitem[\citeproctext]{ref-ggside}
+Landis, J. (2024). Ggside: Side grammar graphics. Retrieved from
+\url{https://github.com/jtlandis/ggside}
+
+\bibitem[\citeproctext]{ref-Lovato2021}
+Lovato, T., Peano, D., \& Butenschön, M. (2021a). {IPCC DDC}: {CMCC
+CMCC-ESM2} model output prepared for {CMIP6 CMIP} {[}Data set{]}. World
+Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6CMCMCMC}
+
+\bibitem[\citeproctext]{ref-Lovato2021a}
+Lovato, T., Peano, D., \& Butenschön, M. (2021b). {IPCC DDC}: {CMCC
+CMCC-ESM2} model output prepared for {CMIP6 ScenarioMIP} {[}Data set{]}.
+World Data Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPCMCMC}
+
+\bibitem[\citeproctext]{ref-Muir2010}
+Muir, L. C., \& Reeder, M. J. (2010). Idealized modelling of landfalling
+cold fronts. \emph{Quarterly Journal of the Royal Meteorological
+Society}, \emph{136}(653), 2147--2161.
+\url{https://doi.org/10.1002/qj.692}
+
+\bibitem[\citeproctext]{ref-OGorman2010}
+O'Gorman, P. A. (2010). Understanding the varied response of the
+extratropical storm tracks to climate change. \emph{Proceedings of the
+National Academy of Sciences}, \emph{107}(45), 19176--19180.
+\url{https://doi.org/10.1073/pnas.1011547107}
+
+\bibitem[\citeproctext]{ref-ONeill2016}
+O'Neill, B. C., Tebaldi, C., van Vuuren, D. P., Eyring, V.,
+Friedlingstein, P., Hurtt, G., et al. (2016). The {Scenario Model
+Intercomparison Project} ({ScenarioMIP}) for {CMIP6}.
+\emph{Geoscientific Model Development}, \emph{9}(9), 3461--3482.
+\url{https://doi.org/10.5194/gmd-9-3461-2016}
+
+\bibitem[\citeproctext]{ref-Parfitt2017}
+Parfitt, R., Czaja, A., \& Kwon, Y.-O. (2017). The impact of {SST}
+resolution change in the {ERA-Interim} reanalysis on wintertime {Gulf
+Stream} frontal air-sea interaction. \emph{Geophysical Research
+Letters}, \emph{44}(7), 3246--3254.
+\url{https://doi.org/10.1002/2017GL073028}
+
+\bibitem[\citeproctext]{ref-patchwork}
+Pedersen, T. L. (2024). Patchwork: The composer of plots.
+
+\bibitem[\citeproctext]{ref-Priestley2022}
+Priestley, M. D. K., \& Catto, J. L. (2022). Future changes in the
+extratropical storm tracks and cyclone intensity, wind speed, and
+structure. \emph{Weather and Climate Dynamics}, \emph{3}(1), 337--360.
+\url{https://doi.org/10.5194/wcd-3-337-2022}
+
+\bibitem[\citeproctext]{ref-R}
+R Core Team. (2023). R: A language and environment for statistical
+computing. Vienna, Austria: R Foundation for Statistical Computing.
+Retrieved from \url{https://www.R-project.org/}
+
+\bibitem[\citeproctext]{ref-Reeder2015}
+Reeder, M. J., Spengler, T., \& Musgrave, R. (2015). Rossby waves,
+extreme fronts, and wildfires in southeastern {Australia}.
+\emph{Geophysical Research Letters}, \emph{42}(6), 2015--2023.
+\url{https://doi.org/10.1002/2015GL063125}
+
+\bibitem[\citeproctext]{ref-Reeder2021}
+Reeder, M. J., Spengler, T., \& Spensberger, C. (2021). The {Effect} of
+{Sea Surface Temperature Fronts} on {Atmospheric Frontogenesis}.
+\emph{Journal of the Atmospheric Sciences}, \emph{78}(6), 1753--1771.
+\url{https://doi.org/10.1175/JAS-D-20-0118.1}
+
+\bibitem[\citeproctext]{ref-Schneider2015}
+Schneider, T., Bischoff, T., \& Płotka, H. (2015). Physics of {Changes}
+in {Synoptic Midlatitude Temperature Variability}. \emph{Journal of
+Climate}, \emph{28}(6), 2312--2331.
+\url{https://doi.org/10.1175/JCLI-D-14-00632.1}
+
+\bibitem[\citeproctext]{ref-Schupfner2019}
+Schupfner, M., Wieners, K.-H., Wachsmann, F., Steger, C., Bittner, M.,
+Jungclaus, J., et al. (2019). {IPCC DDC}: {DKRZ MPI-ESM1}.2-{HR} model
+output prepared for {CMIP6 ScenarioMIP} {[}Data set{]}. World Data
+Center for Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPDKME2}
+
+\bibitem[\citeproctext]{ref-Simmonds2012}
+Simmonds, I., Keay, K., \& Bye, J. A. T. (2012). Identification and
+{Climatology} of {Southern Hemisphere Mobile Fronts} in a {Modern
+Reanalysis}. \emph{Journal of Climate}, \emph{25}(6), 1945--1962.
+\url{https://doi.org/10.1175/JCLI-D-11-00100.1}
+
+\bibitem[\citeproctext]{ref-Tamarin2017}
+Tamarin, T., \& Kaspi, Y. (2017). The poleward shift of storm tracks
+under global warming: {A Lagrangian} perspective. \emph{Geophysical
+Research Letters}, \emph{44}(20), 10, 666--10, 674.
+\url{https://doi.org/10.1002/2017GL073633}
+
+\bibitem[\citeproctext]{ref-Thomas2019}
+Thomas, C. M., \& Schultz, D. M. (2019). Global {Climatologies} of
+{Fronts}, {Airmass Boundaries}, and {Airstream Boundaries}: {Why} the
+{Definition} of {``{Front}''} {Matters}. \emph{Monthly Weather Review},
+\emph{147}(2), 691--717. \url{https://doi.org/10.1175/MWR-D-18-0289.1}
+
+\bibitem[\citeproctext]{ref-Volodin2019}
+Volodin, E., Mortikov, E., Gritsun, A., Lykossov, V., Galin, V.,
+Diansky, N., et al. (2019a). {INM INM-CM4-8} model output prepared for
+{CMIP6 CMIP} historical {[}Data set{]}. Earth System Grid Federation.
+\url{https://doi.org/10.22033/ESGF/CMIP6.5069}
+
+\bibitem[\citeproctext]{ref-Volodin2019a}
+Volodin, E., Mortikov, E., Gritsun, A., Lykossov, V., Galin, V.,
+Diansky, N., et al. (2019b). {IPCC DDC}: {INM INM-CM4-8} model output
+prepared for {CMIP6 ScenarioMIP} {[}Data set{]}. World Data Center for
+Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPINIC8}
+
+\bibitem[\citeproctext]{ref-Volodin2019b}
+Volodin, E., Mortikov, E., Gritsun, A., Lykossov, V., Galin, V.,
+Diansky, N., et al. (2019c). {IPCC DDC}: {INM INM-CM5-0} model output
+prepared for {CMIP6 CMIP} {[}Data set{]}. World Data Center for Climate
+(WDCC) at DKRZ. \url{https://doi.org/10.26050/WDCC/AR6.C6CMINIC0}
+
+\bibitem[\citeproctext]{ref-Volodin2019c}
+Volodin, E., Mortikov, E., Gritsun, A., Lykossov, V., Galin, V.,
+Diansky, N., et al. (2019d). {IPCC DDC}: {INM INM-CM5-0} model output
+prepared for {CMIP6 ScenarioMIP} {[}Data set{]}. World Data Center for
+Climate (WDCC) at DKRZ.
+\url{https://doi.org/10.26050/WDCC/AR6.C6SPINIC0}
+
+\bibitem[\citeproctext]{ref-ggplot2}
+Wickham, H. (2016). ggplot2: Elegant graphics for data analysis.
+Springer-Verlag New York. Retrieved from
+\url{https://ggplot2.tidyverse.org}
+
+\bibitem[\citeproctext]{ref-cowplot}
+Wilke, C. O. (2024). Cowplot: Streamlined plot theme and plot
+annotations for 'ggplot2'. Retrieved from
+\url{https://wilkelab.org/cowplot/}
+
+\end{CSLReferences}
+
+
+
+
+\end{document}
