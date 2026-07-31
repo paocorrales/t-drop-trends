@@ -3,17 +3,23 @@ title: "Using rapid temperature falls to estimate future strong cold front frequ
 format:
     agusi-pdf:
         keep-tex: true
-#journal: "grl"
 author:
   - name: Paola B Corrales
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: Victoria
+        region: Melbourne
         country: Australia
-      - name: Monash University
-        department: ARC Centre of Excellence for Climate Extremes
-        region: Victoria
+      - name: ARC Centre of Excellence for Climate Extremes
+        # department: ARC Centre of Excellence for Climate Extremes
+        region: Melbourne
+        country: Australia
+      - name: Australian National University
+        department: Research School of Earth Sciences
+        region: Canberra
+        country: Australia
+      - name: ARC Centre of Excellence for the Weather of the 21st Century
+        region: Melbourne
         country: Australia
     corresponding: true
     orcid: 0000-0003-1923-9129
@@ -22,11 +28,13 @@ author:
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: Victoria
+        region: Melbourne
         country: Australia
-      - name: Monash University
-        department: ARC Centre of Excellence for Climate Extremes
-        region: Victoria
+      - name: ARC Centre of Excellence for Climate Extremes
+        region: Melbourne
+        country: Australia
+      - name: ARC Centre of Excellence for the Weather of the 21st Century
+        region: Melbourne
         country: Australia
     orcid: 0000-0002-4584-0885
     email: martin.singh@monash.edu
@@ -34,11 +42,10 @@ author:
     affiliations:
       - name: Monash University
         department: School of Earth, Atmosphere and Environment
-        region: Victoria
+        region: Melbourne
         country: Australia
-      - name: Monash University
-        department: ARC Centre of Excellence for Climate Extremes
-        region: Victoria
+      - name: ARC Centre of Excellence for Climate Extremes
+        region: Melbourne
         country: Australia
     orcid: 000-0002-4583-5875
     email: michael.reeder@monash.edu
