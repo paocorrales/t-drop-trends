@@ -57,9 +57,9 @@ plain-language-summary: |
   Cold fronts, are defined by large temperature falls and sometimes accompanied by rain and strong wind. They play a key role in the day-to-day weather in midlatitudes. In this study, we use a simple method based on changes in maximun temperature from one day to the next to identify strong cold fronts in climate simulations. In the future climate projections from ten global models, strong cold fronts are less frequent in much of the Northern Hemisphere, especially over the oceans. In the Southern Hemisphere, however, strong cold fronts in the projections shift closer to the South Pole and may become more frequent over land areas like southern Australia and southern Africa. These changes are linked to shifts in the temperature contrast between the equator and the poles and the paths taken by storm systems. 
 keywords: []
 keypoints: 
-  - Day-to-day falls in maximun temperature are used to identify cold fronts in CMIP6 models using the historical simulations and SSP5-8.5 scenario.
-  - In the Northern Hemisphere the frequency of strong cold fronts decreases, whereas in the Southern Hemisphere the region of highest frecuency shifts poleward over the oceans and the frequency increases over land.
-  - Changes in cold front frequency correlated positively with changes in the meridional gradient of surface temperature in both hemispheres and with changes in storm tracks in the Northern Hemisphere.
+  - Day-to-day falls in maximum temperature are used to identify cold fronts in CMIP6 models using the historical and SSP5-8.5 simulations
+  - In the NH the frequency of strong cold fronts decreases, while in the SH they shift poleward over the oceans and increase over land
+  - Cold front frequency changes correlated positively with the meridional surface temperature gradient globally and with storm tracks in the NH
 bibliography: [cold-fronts.bib, packages.bib]  
 citation:
   container-title: Geophysical Research Letters
