@@ -15,7 +15,7 @@ download <- function(url, file, zipped) {
 
 datasets <- list(
   data = list(
-    url = "https://zenodo.org/records/19840311/files/data.zip?download=1",
+    url = "https://zenodo.org/records/21713532/files/data_v2.zip?download=1",
     file = here::here("data/data.zip"),
     zipped = TRUE
   )

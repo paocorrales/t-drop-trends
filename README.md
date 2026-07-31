@@ -42,7 +42,7 @@ This should install all the package dependencies needed to install the package a
 
 ### Getting the data
 
-To get the data needed to reproduce this paper is openly available in Zenodo at https://zenodo.org/records/19840311, version 0.9.2. You can download it running the `download_data.R`. The data will be stored in `data/`. 
+To get the data needed to reproduce this paper is openly available in Zenodo at https://zenodo.org/records/21713532, version 2. You can download it running the `download_data.R`. The data will be stored in `data/`. 
 
 ### Render the manuscript
 
