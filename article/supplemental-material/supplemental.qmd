@@ -157,6 +157,24 @@ percentiles <- purrr::map(file_list, function(f) {
 
 ```
 
+\
+\
+\
+\
+
+## Contents of this file {.unnumbered}
+\
+\
+
+* **Figure S1:** Multimodel mean change in the frecuency of $\Delta T_{2.5}$ by seasons.
+* **Figure S2:** Mean change in the mean $\Delta T_{2.5}$ frequency and $\partial \bar{T} / \partial y$ and EKE by seasons.
+
+\clearpage
+
+## Figure S1 {.unnumbered}
+
+
+
 ```{r}
 #| label: fig-trend-seasonal
 #| fig-width: 8
@@ -224,9 +242,9 @@ plot_grid(map_freq, map_perc,
           ncol = 1)
 ```
 
+\clearpage
 
-
-
+## Figure S2 {.unnumbered}
 
 
 
