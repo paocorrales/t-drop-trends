@@ -70,11 +70,14 @@ execute:
   echo: false
   message: false
   warning: false
+knitr:
+  opts_chunk:
+    fig.path: ""
 ---
 
 ```{r}
 #| label: setup
-knitr::opts_chunk$set(fig.path = "")
+
 library(metR)
 library(ggplot2)
 library(data.table)
