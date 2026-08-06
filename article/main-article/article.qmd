@@ -74,7 +74,7 @@ execute:
 
 ```{r}
 #| label: setup
-
+knitr::opts_chunk$set(fig.path = "")
 library(metR)
 library(ggplot2)
 library(data.table)
@@ -655,9 +655,13 @@ Finally, while this study focuses on cold fronts, in some regions warm fronts al
 This research was supported by the Australian Research Council Centre of Excellence for Climate Extremes (CE170100023), the Australian Research Council Centre of Excellence for the Weather of the 21st Century (CE230100012), with the assistance of resources from the National Computational Infrastructure (NCI Australia), an NCRIS enabled capability supported by the Australian Government. 
 P.C. also acknowledges the use of the following open-source software projects that supported data analysis, visualization, and reproducible reporting: R (v4.3.1, @R), metR [@metR], rcdo [@rcdo], data.table [@data.table], ggplot2 [@ggplot2], patchwork [@patchwork], cowplot [@cowplot], ggside [@ggside], and Quarto [@quarto].
 
-## Open research
+## Conflict of Interest
 
-The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data can be found at <https://doi.org/10.5281/zenodo.21713780>. The derived data that support the findings of this study are also openly available in Zenodo at <https://doi.org/10.5281/zenodo.21713532>. 
+The authors declare no conflicts of interest relevant to this study.
+
+## Availability Statement
+
+The CMIP6 data used in the manuscript is publicly available at the Earth System Grid  Federation [https://esgf-node.llnl.gov/projects/cmip6/](https://esgf-node.llnl.gov/projects/cmip6/). A version-controlled repository of the code used to create this analysis, including the necessary code to download the derived data has been deposited in Zenodo [@Corrales2026]. The derived data that support the findings of this study are also openly available in Zenodo [@Corrales2026a]. 
 
 
 ## References {.unnumbered}
